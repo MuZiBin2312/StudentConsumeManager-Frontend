@@ -26,8 +26,8 @@
     <!-- 添加和编辑对话框 -->
     <el-dialog :visible.sync="dialogVisible" title="消费记录">
       <el-form :model="form">
-        <el-form-item label="消费编号">
-          <el-input v-model="form.recordId">form.amount</el-input>
+        <el-form-item label="消费编号" >
+          <span>{{ form.recordId }}</span>
         </el-form-item>
         <el-form-item label="商品名">
           <el-input v-model="form.name"></el-input>
@@ -47,9 +47,6 @@
         <el-form-item label="地点">
           <el-input v-model="form.location"></el-input>
         </el-form-item>
-        <el-form-item label="消费人ID">
-          <el-input v-model="form.studentId"></el-input>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -68,29 +65,30 @@ export default {
       consumeList: [],
       dialogVisible: false,
       form: {
-        cid: null,
-        cname: '',
-        price: null,
-        category: '',
+        recordId:'',
+        name: '',
+        amount: null,
+        consumptionType: '',
         time: '',
-        payway:'',
+        paymentType:'',
         location:'',
-        consumerID:null
+        consumerID:null,
       },
       isEdit: false,
     };
   },
   methods: {
     fetchConsumeData() {
-      axios.get('http://172.20.10.13:10086/record/all').then((response) => {
-        this.consumeList = response.data;
-        console.log(response.data);
+      axios.get('http://192.168.76.30:10085/record/all').then((response) => {
+        console.log(sessionStorage.getItem('id'));
+        this.consumeList = response.data.data;
+        
         
       });
     },
     openAddDialog() {
       this.isEdit = false;
-      this.form = { cid: null, cname: '', price: null, category: '' }; // 重置表单
+      this.form = { recordId: null}; // 重置表单
       this.dialogVisible = true;
     },
     openEditDialog(row) {
@@ -99,24 +97,28 @@ export default {
       this.dialogVisible = true;
     },
     saveConsume() {
+      this.form.studentId = sessionStorage.getItem('id');
+      console.log(this.form);
+      
       if (this.isEdit) {
-        axios.put(`/consume/${this.form.cid}`, this.form).then(() => {
+
+        axios.put(`http://192.168.76.30:10085/record/${this.form.recordId}`, this.form).then(() => {
           this.$message.success('记录更新成功');
           this.dialogVisible = false;
           this.fetchConsumeData();
         });
       } else {
-        axios.post('http://172.20.10.13:10086/record/addRecord', this.form).then(() => {
+        axios.post('http://192.168.76.30:10085/record/addRecord', this.form).then(() => {
           this.$message.success('记录添加成功');
           this.dialogVisible = false;
           this.fetchConsumeData();
         });
       }
     },
-    deleteConsume(cid) {
-      console.log();
+    deleteConsume(recordId) {
+      console.log(recordId);
       
-      axios.delete(`http://172.20.10.13:10086/record/delete/${cid.recordId}`).then(() => {
+      axios.delete(`http://192.168.76.30:10085/record/delete/${recordId.recordId}`).then(() => {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();
       });

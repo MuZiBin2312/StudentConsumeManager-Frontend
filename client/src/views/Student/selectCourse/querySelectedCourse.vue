@@ -76,7 +76,7 @@ export default {
       }
 
       const that = this
-      axios.post('http://localhost:10086/SCT/deleteBySCT', sct).then(function (resp) {
+      axios.post('http://192.168.76.30:10085/SCT/deleteBySCT', sct).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -117,7 +117,7 @@ export default {
     const sid = sessionStorage.getItem('sid')
     const term = sessionStorage.getItem('currentTerm')
     const that = this
-    axios.get('http://localhost:10086/SCT/findBySid/' + sid + '/' + term).then(function (resp) {
+    axios.get('http://192.168.76.30:10085/SCT/findBySid/' + sid + '/' + term).then(function (resp) {
       that.tmpList = resp.data
       that.total = resp.data.length
       let start = 0, end = that.pageSize

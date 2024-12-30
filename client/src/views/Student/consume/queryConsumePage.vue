@@ -52,7 +52,7 @@
     created() {
       // 模拟获取数据
       this.consumeData = [
-        { id: 1, cname: "咖啡", price: 20, category: "餐饮", payWay: "微信", location: "校内咖啡厅", time: "2024-12-27 10:00" },
+        
       ];
       this.filteredData = this.consumeData; // 初始化显示所有数据
     },
