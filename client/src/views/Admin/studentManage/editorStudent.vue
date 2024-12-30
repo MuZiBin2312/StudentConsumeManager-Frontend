@@ -16,6 +16,7 @@
   </div>
 </template>
 <script>
+import {BASE_URL} from "@/config";
 export default {
   data() {
     return {
