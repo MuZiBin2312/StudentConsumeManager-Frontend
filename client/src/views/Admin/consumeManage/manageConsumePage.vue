@@ -157,7 +157,7 @@ export default {
     },
     batchDelete() {
       const ids = this.selectedRows.map(row => row.recordId);
-      axios.post(`${BASE_URL}/record/batchDelete`, { ids }).then(() => {
+      axios.delete(`${BASE_URL}/record/batchDelete`, { data:ids }).then(() => {
         this.$message.success('批量删除成功');
         this.fetchConsumeData();
       });
