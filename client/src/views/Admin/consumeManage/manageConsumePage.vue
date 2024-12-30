@@ -4,7 +4,16 @@
       <el-main>
         <el-button type="primary" @click="fetchConsumeData">刷新数据</el-button>
         <el-button type="success" @click="openAddDialog">新增记录</el-button>
-        <el-table :data="consumeList" style="width: 100%">
+        <el-button type="danger" @click="batchDelete" :disabled="!selectedRows.length">批量删除</el-button>
+        <el-table
+            :data="consumeList"
+            style="width: 100%"
+            @selection-change="handleSelectionChange"
+            ref="consumeTable"
+        >
+          <!-- 多选框列 -->
+          <el-table-column type="selection" width="55"></el-table-column>
+
           <el-table-column prop="recordId" label="编号" width="80"></el-table-column>
           <el-table-column prop="name" label="商品名"></el-table-column>
           <el-table-column prop="amount" label="价格"></el-table-column>
@@ -38,29 +47,29 @@
         <el-form-item label="类别">
           <el-select v-model="form.consumptionType" placeholder="请选择类别">
             <el-option
-              v-for="(item, index) in consumptionOptions"
-              :key="index"
-              :label="item"
-              :value="item"
+                v-for="(item, index) in consumptionOptions"
+                :key="index"
+                :label="item"
+                :value="item"
             ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="时间">
           <el-date-picker
-            v-model="form.time"
-            type="datetime"
-            format="yyyy-MM-DD HH:mm:ss"
-            value-format="yyyy-MM-DD HH:mm:ss"
-            placeholder="选择时间"
+              v-model="form.time"
+              type="datetime"
+              format="yyyy-MM-DD HH:mm:ss"
+              value-format="yyyy-MM-DD HH:mm:ss"
+              placeholder="选择时间"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="支付方式">
           <el-select v-model="form.paymentType" placeholder="请选择支付方式">
             <el-option
-              v-for="(item, index) in paymentOptions"
-              :key="index"
-              :label="item"
-              :value="item"
+                v-for="(item, index) in paymentOptions"
+                :key="index"
+                :label="item"
+                :value="item"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -95,17 +104,14 @@ export default {
         studentId: null,
       },
       isEdit: false,
-      paymentOptions: ["校园卡", "微信", "支付宝", "现金", "银行卡", "其他", "test"], // 支付方式选项
-      consumptionOptions: ["餐饮消费", "学习用品", "娱乐消费", "生活服务", "交通出行", "其他", "test"], // 消费类别选项
+      paymentOptions: ["校园卡", "微信", "支付宝", "现金", "银行卡", "其他"],
+      consumptionOptions: ["餐饮消费", "学习用品", "娱乐消费", "生活服务", "交通出行", "其他"],
+      selectedRows: [],
     };
   },
   methods: {
     fetchConsumeData() {
-      console.log(sessionStorage.getItem('id'));
       axios.get(`${BASE_URL}/record/all`).then((response) => {
-        console.log(sessionStorage.getItem('id'));
-        this.consumeList = response.data.data;
-
         this.consumeList = response.data.data;
       });
     },
@@ -116,7 +122,7 @@ export default {
         name: "",
         amount: null,
         consumptionType: "",
-        time: this.getCurrentTime(), // 默认当前时间
+        time: this.getCurrentTime(),
         paymentType: "",
         location: "",
       };
@@ -130,7 +136,6 @@ export default {
     saveConsume() {
       this.form.studentId = sessionStorage.getItem("id");
       if (this.isEdit) {
-
         axios.put(`${BASE_URL}/record/${this.form.recordId}`, this.form).then(() => {
           this.$message.success('记录更新成功');
           this.dialogVisible = false;
@@ -144,16 +149,25 @@ export default {
         });
       }
     },
-    deleteConsume(recordId) {
-      console.log(recordId);
-
-      axios.delete(`${BASE_URL}/record/delete/${recordId.recordId}`).then(() => {
+    deleteConsume(record) {
+      axios.delete(`${BASE_URL}/record/delete/${record.recordId}`).then(() => {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();
-      });    },
+      });
+    },
+    batchDelete() {
+      const ids = this.selectedRows.map(row => row.recordId);
+      axios.post(`${BASE_URL}/record/batchDelete`, { ids }).then(() => {
+        this.$message.success('批量删除成功');
+        this.fetchConsumeData();
+      });
+    },
+    handleSelectionChange(selection) {
+      this.selectedRows = selection;
+    },
     getCurrentTime() {
       const now = new Date();
-      return now.toISOString().slice(0, 19).replace("T", " "); // 格式化为 yyyy-MM-dd HH:mm:ss
+      return now.toISOString().slice(0, 19).replace("T", " ");
     },
   },
   mounted() {
