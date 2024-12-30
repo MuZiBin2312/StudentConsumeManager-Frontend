@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     select(row) {
@@ -106,7 +108,7 @@ export default {
         that.tmpList = null
         that.total = null
         that.tableData = null
-        axios.post("http://192.168.76.30:10085/SCT/findBySearch", newRuleForm).then(function (resp) {
+        axios.post(`${BASE_URL}/SCT/findBySearch`, newRuleForm).then(function (resp) {
           console.log("查询结果:");
           console.log(resp)
           that.tmpList = resp.data

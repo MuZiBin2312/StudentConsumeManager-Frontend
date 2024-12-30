@@ -16,6 +16,8 @@
   </div>
 </template>
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   data() {
     return {
@@ -43,7 +45,7 @@ export default {
     else {
       this.ruleForm.tid = this.$route.query.tid
     }
-    axios.get('http://192.168.76.30:10085/teacher/findById/' + this.ruleForm.tid).then(function (resp) {
+    axios.get('${BASE_URL}/teacher/findById/' + this.ruleForm.tid).then(function (resp) {
       that.ruleForm = resp.data
     })
   },
@@ -63,7 +65,7 @@ export default {
             return
           }
           console.log(this.ruleForm)
-          axios.post("http://192.168.76.30:10085/teacher/updateTeacher", this.ruleForm).then(function (resp) {
+          axios.post(`${BASE_URL}/teacher/updateTeacher`, this.ruleForm).then(function (resp) {
             if (resp.data === true) {
               that.$message({
                 showClose: true,

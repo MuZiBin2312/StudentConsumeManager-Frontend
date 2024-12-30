@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     changePage(page) {
@@ -70,7 +72,7 @@ export default {
     console.log(this.term)
 
     const that = this
-    axios.get('http://192.168.76.30:10085/courseTeacher/findMyCourse/' + this.tid + '/' + this.term).then(function (resp) {
+    axios.get(`${BASE_URL}/courseTeacher/findMyCourse/${this.tid}/${this.term}`).then(function (resp) {
 
       that.tmpList = resp.data
       that.total = resp.data.length

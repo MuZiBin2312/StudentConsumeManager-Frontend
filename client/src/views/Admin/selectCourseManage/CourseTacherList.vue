@@ -56,6 +56,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     select(row) {
@@ -71,7 +73,7 @@ export default {
         term: term
       }
       const that = this
-      axios.post('http://192.168.76.30:10085/SCT/save', sct).then(function (resp) {
+      axios.post(`${BASE_URL}/SCT/save`, sct).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -91,7 +93,7 @@ export default {
     },
     deleteCourseTeacher(row) {
       const that = this
-      axios.post('http://192.168.76.30:10085/courseTeacher/deleteById', row).then(function (resp) {
+      axios.post(`${BASE_URL}/courseTeacher/deleteById`, row).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -138,7 +140,7 @@ export default {
         that.tmpList = null
         that.total = null
         that.tableData = null
-        axios.post("http://192.168.76.30:10085/courseTeacher/findCourseTeacherInfo", newRuleForm).then(function (resp) {
+        axios.post(`${BASE_URL}/courseTeacher/findCourseTeacherInfo`, newRuleForm).then(function (resp) {
           that.tmpList = resp.data
           that.total = resp.data.length
           let start = 0, end = that.pageSize

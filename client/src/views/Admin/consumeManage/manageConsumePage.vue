@@ -58,6 +58,7 @@
 
 <script>
 import axios from 'axios';
+import {BASE_URL} from "@/config";
 
 export default {
   data() {
@@ -79,7 +80,8 @@ export default {
   },
   methods: {
     fetchConsumeData() {
-      axios.get('http://192.168.76.30:10085/record/all').then((response) => {
+      console.log(sessionStorage.getItem('id'));
+      axios.get(`${BASE_URL}/record/all`).then((response) => {
         console.log(sessionStorage.getItem('id'));
         this.consumeList = response.data.data;
         
@@ -102,13 +104,13 @@ export default {
       
       if (this.isEdit) {
 
-        axios.put(`http://192.168.76.30:10085/record/${this.form.recordId}`, this.form).then(() => {
+        axios.put(`${BASE_URL}/record/${this.form.recordId}`, this.form).then(() => {
           this.$message.success('记录更新成功');
           this.dialogVisible = false;
           this.fetchConsumeData();
         });
       } else {
-        axios.post('http://192.168.76.30:10085/record/addRecord', this.form).then(() => {
+        axios.post(`${BASE_URL}/record/addRecord`, this.form).then(() => {
           this.$message.success('记录添加成功');
           this.dialogVisible = false;
           this.fetchConsumeData();
@@ -118,7 +120,7 @@ export default {
     deleteConsume(recordId) {
       console.log(recordId);
       
-      axios.delete(`http://192.168.76.30:10085/record/delete/${recordId.recordId}`).then(() => {
+      axios.delete(`${BASE_URL}/record/delete/${recordId.recordId}`).then(() => {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();
       });

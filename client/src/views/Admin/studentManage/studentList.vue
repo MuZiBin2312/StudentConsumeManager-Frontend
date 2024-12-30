@@ -50,11 +50,13 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     deleteStudent(row) {
       const that = this
-      axios.get('http://192.168.76.30:10085/student/deleteById/' + row.sid).then(function (resp) {
+      axios.get(`${BASE_URL}/student/deleteById/` + row.sid).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -88,7 +90,7 @@ export default {
       page = page - 1
       if (this.tmpList === null) {
         const that = this
-        axios.get('http://192.168.76.30:10085/student/findByPage/' + page + '/' + that.pageSize).then(function (resp) {
+        axios.get(`${BASE_URL}/student/findByPage/${page}/${that.pageSize}`).then(function (resp) {
           that.tableData = resp.data
         })
       }
@@ -127,12 +129,12 @@ export default {
     // 是否从查询页跳转
     this.ruleForm = this.$route.query.ruleForm
     if (this.$route.query.ruleForm === undefined || (this.ruleForm.sid === null && this.ruleForm.sname === null)) {
-      axios.get('http://192.168.76.30:10085/student/getLength').then(function (resp) {
+      axios.get(`${BASE_URL}/student/getLength`).then(function (resp) {
         console.log("获取列表总长度: " + resp.data)
         that.total = resp.data
       })
 
-      axios.get('http://192.168.76.30:10085/student/findByPage/0/' + that.pageSize).then(function (resp) {
+      axios.get(`${BASE_URL}/student/findByPage/0/${that.pageSize}`).then(function (resp) {
         that.tableData = resp.data
       })
     }
@@ -140,7 +142,7 @@ export default {
       // 从查询页跳转并且含查询
       console.log('正在查询跳转数据')
       console.log(this.ruleForm)
-      axios.post('http://192.168.76.30:10085/student/findBySearch', this.ruleForm).then(function (resp) {
+      axios.post(`${BASE_URL}/student/findBySearch`, this.ruleForm).then(function (resp) {
         console.log('获取查询数据：')
         that.tmpList = resp.data
         that.total = resp.data.length

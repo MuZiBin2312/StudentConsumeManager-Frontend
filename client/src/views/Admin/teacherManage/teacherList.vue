@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     deleteTeacher(row) {
@@ -62,7 +64,7 @@ export default {
         return
       }
       const that = this
-      axios.get('http://192.168.76.30:10085/teacher/deleteById/' + row.tid).then(function (resp) {
+      axios.get(`${BASE_URL}/teacher/deleteById/${row.tid}`).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -131,7 +133,7 @@ export default {
         that.tmpList = null
         that.total = null
         that.tableData = null
-        axios.post("http://192.168.76.30:10085/teacher/findBySearch", newRuleForm).then(function (resp) {
+        axios.post(`${BASE_URL}/teacher/findBySearch`, newRuleForm).then(function (resp) {
           console.log("查询结果:");
           console.log(newRuleForm)
           console.log(resp)

@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     changePage(page) {
@@ -84,7 +86,7 @@ export default {
   },
   created() {
     const that = this
-    axios.get('http://192.168.76.30:10085/SCT/findAllTerm').then(function (resp) {
+    axios.get(`${BASE_URL}/SCT/findAllTerm`).then(function (resp) {
       that.termList = resp.data
     })
   },
@@ -93,7 +95,7 @@ export default {
       handler(newTerm, oldTerm) {
         const sid = sessionStorage.getItem('sid')
         const that = this
-        axios.get('http://192.168.76.30:10085/SCT/findBySid/' + sid + '/' + newTerm).then(function (resp) {
+        axios.get(`${BASE_URL}/SCT/findBySid/${sid}/${newTerm}`).then(function (resp) {
           that.tmpList = resp.data
           that.total = resp.data.length
           let start = 0, end = that.pageSize
