@@ -88,8 +88,10 @@ export default {
               password: that.ruleForm.pass,
             }
           }
+          console.log(form)
+          axios.post(`${BASE_URL}/${type}/update${ss}`, form).then(function (resp) {
+            console.log(resp)
 
-          axios.post(axios.post(`${BASE_URL}/${type}/update${ss}`, form)).then(function (resp) {
             if (resp.data === true) {
               that.$message({
                 showClose: true,

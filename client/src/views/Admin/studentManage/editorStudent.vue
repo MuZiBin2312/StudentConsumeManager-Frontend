@@ -16,14 +16,16 @@
   </div>
 </template>
 <script>
-import {BASE_URL} from "@/config";
+import { BASE_URL } from "@/config";
+import axios from "axios";
+
 export default {
   data() {
     return {
       ruleForm: {
         sid: null,
         sname: null,
-        password: null
+        password: null,
       },
       rules: {
         sname: [
@@ -31,43 +33,43 @@ export default {
           { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'change' }
+          { required: true, message: '请输入密码', trigger: 'blur' },
         ],
-      }
+      },
     };
   },
   created() {
-    const that = this
     if (this.$route.query.sid === undefined) {
-      this.ruleForm.sid = 1
+      this.ruleForm.sid = 1;
+    } else {
+      this.ruleForm.sid = this.$route.query.sid;
     }
-    else {
-      this.ruleForm.sid = this.$route.query.sid
-    }
-    axios.get(`${BASE_URL}/student/findById/` + this.ruleForm.sid).then(function (resp) {
-      that.ruleForm = resp.data
-    })
+    axios.get(`${BASE_URL}/student/findById/${this.ruleForm.sid}`).then((resp) => {
+      Object.assign(this.ruleForm, resp.data); // 合并数据
+    });
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // 通过前端校验
-          const that = this
-          console.log(this.ruleForm)
-          axios.post(`${BASE_URL}/student/updateStudent`, this.ruleForm).then(function (resp) {
-            if (resp.data === true) {
-              that.$message({
-                showClose: true,
-                message: '编辑成功',
-                type: 'success'
+          console.log("当前表单数据：", this.ruleForm);
+          axios.post(`${BASE_URL}/student/updateStudent`, this.ruleForm)
+              .then((resp) => {
+                if (resp.data === true) {
+                  this.$message({
+                    showClose: true,
+                    message: '编辑成功',
+                    type: 'success',
+                  });
+                  this.$router.push("/studentList");
+                } else {
+                  this.$message.error('编辑失败，请检查数据库');
+                }
+              })
+              .catch((error) => {
+                console.error("请求失败：", error);
+                this.$message.error('请求失败，请检查网络或联系管理员');
               });
-            }
-            else {
-              that.$message.error('编辑失败，请检查数据库');
-            }
-            that.$router.push("/studentList")
-          })
         } else {
           return false;
         }
@@ -77,8 +79,8 @@ export default {
       this.$refs[formName].resetFields();
     },
     test() {
-      console.log(this.ruleForm)
-    }
-  }
-}
+      console.log("当前表单数据：", this.ruleForm);
+    },
+  },
+};
 </script>
