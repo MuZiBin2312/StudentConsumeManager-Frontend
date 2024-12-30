@@ -42,7 +42,7 @@ import consumeManage from "@/views/Admin/consumeManage/index"
 import manageConsumePage from '@/views/Admin/consumeManage/manageConsumePage'; // 管理员的增删改查页面
 import consumePage from '@/views/Student/consume/consumePage'; // 消费页面主组件
 import queryConsumePage from '@/views/Student/consume/queryConsumePage'; // 查询消费记录页面
-
+import queryConsumeManagePage from '@/views/Admin/consumeManage/queryConsumePage'; // 查询消费记录页面
 
 
 Vue.use(VueRouter)
@@ -92,7 +92,7 @@ const routes = [
           {
             path: '/queryConsumePage', 
             name: '查询消费记录',
-            component: queryConsumePage,
+            component: queryConsumeManagePage,
             meta: {requireAuth: true} 
           },
           {
