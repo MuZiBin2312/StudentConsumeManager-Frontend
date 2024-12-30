@@ -38,15 +38,7 @@
     },
     methods: {
       searchConsume() {
-        // 根据条件过滤
-        this.filteredData = this.consumeData.filter(item => {
-          const isNameMatch = item.cname.includes(this.queryForm.cname);
-          const isDateMatch =
-            !this.queryForm.timeRange.length ||
-            (new Date(item.time) >= new Date(this.queryForm.timeRange[0]) &&
-              new Date(item.time) <= new Date(this.queryForm.timeRange[1]));
-          return isNameMatch && isDateMatch;
-        });
+        
       },
     },
     created() {

@@ -26,7 +26,7 @@
     <!-- 添加和编辑对话框 -->
     <el-dialog :visible.sync="dialogVisible" title="消费记录">
       <el-form :model="form">
-        <el-form-item label="消费编号" >
+        <el-form-item label="消费编号(自增)">
           <span>{{ form.recordId }}</span>
         </el-form-item>
         <el-form-item label="商品名">
@@ -36,13 +36,33 @@
           <el-input v-model.number="form.amount"></el-input>
         </el-form-item>
         <el-form-item label="类别">
-          <el-input v-model="form.consumptionType"></el-input>
+          <el-select v-model="form.consumptionType" placeholder="请选择类别">
+            <el-option
+              v-for="(item, index) in consumptionOptions"
+              :key="index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="时间">
-          <el-input v-model="form.time"></el-input>
+          <el-date-picker
+            v-model="form.time"
+            type="datetime"
+            format="yyyy-MM-DD HH:mm:ss"
+            value-format="yyyy-MM-DD HH:mm:ss"
+            placeholder="选择时间"
+          ></el-date-picker>
         </el-form-item>
         <el-form-item label="支付方式">
-          <el-input v-model="form.paymentType"></el-input>
+          <el-select v-model="form.paymentType" placeholder="请选择支付方式">
+            <el-option
+              v-for="(item, index) in paymentOptions"
+              :key="index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="地点">
           <el-input v-model="form.location"></el-input>
@@ -59,23 +79,24 @@
 <script>
 import axios from 'axios';
 import {BASE_URL} from "@/config";
-
 export default {
   data() {
     return {
       consumeList: [],
       dialogVisible: false,
       form: {
-        recordId:'',
-        name: '',
+        recordId: "",
+        name: "",
         amount: null,
-        consumptionType: '',
-        time: '',
-        paymentType:'',
-        location:'',
-        consumerID:null,
+        consumptionType: "",
+        time: "",
+        paymentType: "",
+        location: "",
+        studentId: null,
       },
       isEdit: false,
+      paymentOptions: ["校园卡", "微信", "支付宝", "现金", "银行卡", "其他", "test"], // 支付方式选项
+      consumptionOptions: ["餐饮消费", "学习用品", "娱乐消费", "生活服务", "交通出行", "其他", "test"], // 消费类别选项
     };
   },
   methods: {
@@ -84,13 +105,21 @@ export default {
       axios.get(`${BASE_URL}/record/all`).then((response) => {
         console.log(sessionStorage.getItem('id'));
         this.consumeList = response.data.data;
-        
-        
+                
+        this.consumeList = response.data.data;
       });
     },
     openAddDialog() {
       this.isEdit = false;
-      this.form = { recordId: null}; // 重置表单
+      this.form = {
+        recordId: null,
+        name: "",
+        amount: null,
+        consumptionType: "",
+        time: this.getCurrentTime(), // 默认当前时间
+        paymentType: "",
+        location: "",
+      };
       this.dialogVisible = true;
     },
     openEditDialog(row) {
@@ -99,9 +128,7 @@ export default {
       this.dialogVisible = true;
     },
     saveConsume() {
-      this.form.studentId = sessionStorage.getItem('id');
-      console.log(this.form);
-      
+      this.form.studentId = sessionStorage.getItem("id");
       if (this.isEdit) {
 
         axios.put(`${BASE_URL}/record/${this.form.recordId}`, this.form).then(() => {
@@ -123,8 +150,7 @@ export default {
       axios.delete(`${BASE_URL}/record/delete/${recordId.recordId}`).then(() => {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();
-      });
-    },
+      });    },
   },
   mounted() {
     this.fetchConsumeData();
