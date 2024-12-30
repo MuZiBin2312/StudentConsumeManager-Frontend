@@ -77,7 +77,7 @@ export default {
             form = {
               sid: sessionStorage.getItem('sid'),
               sname: that.ruleForm.name,
-              password: that.ruleForm.pass,
+
             }
           }
           else {
