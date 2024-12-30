@@ -151,6 +151,10 @@ export default {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();
       });    },
+    getCurrentTime() {
+      const now = new Date();
+      return now.toISOString().slice(0, 19).replace("T", " "); // 格式化为 yyyy-MM-dd HH:mm:ss
+    },
   },
   mounted() {
     this.fetchConsumeData();
