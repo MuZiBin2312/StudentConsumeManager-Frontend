@@ -105,7 +105,7 @@ export default {
       axios.get(`${BASE_URL}/record/all`).then((response) => {
         console.log(sessionStorage.getItem('id'));
         this.consumeList = response.data.data;
-                
+
         this.consumeList = response.data.data;
       });
     },
@@ -146,7 +146,7 @@ export default {
     },
     deleteConsume(recordId) {
       console.log(recordId);
-      
+
       axios.delete(`${BASE_URL}/record/delete/${recordId.recordId}`).then(() => {
         this.$message.success('记录删除成功');
         this.fetchConsumeData();

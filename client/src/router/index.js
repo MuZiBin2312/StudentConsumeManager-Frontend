@@ -43,7 +43,7 @@ import manageConsumePage from '@/views/Admin/consumeManage/manageConsumePage'; /
 import consumePage from '@/views/Student/consume/consumePage'; // 消费页面主组件
 import queryConsumePage from '@/views/Student/consume/queryConsumePage'; // 查询消费记录页面
 import queryConsumeManagePage from '@/views/Admin/consumeManage/queryConsumePage'; // 查询消费记录页面
-
+import LogManagePage from '@/views/Admin/LogManage/LogManagePage';
 
 Vue.use(VueRouter)
 
@@ -100,6 +100,20 @@ const routes = [
             name: '管理消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true} // 仅管理员可访问
+          }
+        ]
+      },
+      {
+        path: '/LogManage',
+        name: '日志管理',
+        component: consumeManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/LogManagePage',
+            name: '日志记录',
+            component: LogManagePage,
+            meta: {requireAuth: true}
           }
         ]
       },
