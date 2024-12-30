@@ -71,48 +71,57 @@ import { BASE_URL } from "@/config";
 export default {
   data() {
     return {
+      logList: [], // 日志列表数据
       filters: {
-        module: "用户管理",
-        action: "添加用户",
-        operator: "admin",
-        requestId: "12345",
-        status: "成功",
-        startTime: "2024-12-28 00:00:00",
-        endTime: "2024-12-29 23:59:59",
+        module: null,
+        action: null,
+        operator: null,
+        status: null,
+        startTime: null,
+        endTime: null,
       },
-      logList: [],
     };
   },
   methods: {
     fetchLogData() {
-      const config = {
-        method: "post",
-        url: `${BASE_URL}/log/search`,
-        headers: {
-          userid: "1",
-          username: "1",
-          "Content-Type": "application/json",
-        },
-        data: this.filters,
+      const requestData = {
+        module: this.filters.module || null,
+        action: this.filters.action || null,
+        operator: this.filters.operator || null,
+        status: this.filters.status || null,
+        startTime: this.filters.startTime || null,
+        endTime: this.filters.endTime || null,
       };
 
-      axios(config)
+      axios
+          .post(`${BASE_URL}/log/search`, requestData, {
+            headers: {
+              userid: '1',
+              username: '1',
+              'Content-Type': 'application/json',
+            },
+          })
           .then((response) => {
-            this.logList = response.data.data || [];
+            if (response.data && response.data.data) {
+              this.logList = response.data.data; // 更新日志列表
+            } else {
+              this.$message.error('未获取到日志数据');
+            }
           })
           .catch((error) => {
-            this.$message.error("获取日志失败: " + error.message);
+            console.error(error);
+            this.$message.error('获取日志数据失败');
           });
     },
     resetFilters() {
       this.filters = {
-        module: "用户管理",
-        action: "添加用户",
-        operator: "admin",
-        requestId: "12345",
-        status: "成功",
-        startTime: "2024-12-28 00:00:00",
-        endTime: "2024-12-29 23:59:59",
+        module: "",
+        action: "",
+        operator: "",
+        requestId: "",
+        status: "",
+        startTime: "",
+        endTime: "",
       };
     },
     formatTimestamp(timestamp) {
