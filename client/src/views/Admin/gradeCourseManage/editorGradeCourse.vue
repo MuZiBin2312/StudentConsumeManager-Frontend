@@ -24,6 +24,8 @@
   </div>
 </template>
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   data() {
     var checkGrade = (rule, value, callback) => {
@@ -65,13 +67,10 @@ export default {
     this.ruleForm.tid = this.$route.query.tid
     this.ruleForm.sid = this.$route.query.sid
     this.ruleForm.term = this.$route.query.term
-    axios.get('http://192.168.76.30:10085/SCT/findById/' +
-        this.ruleForm.sid + '/' +
-        this.ruleForm.cid + '/' +
-        this.ruleForm.tid + '/' +
-        this.ruleForm.term).then(function (resp) {
-      that.ruleForm = resp.data
-    })
+    axios.get(`${BASE_URL}/SCT/findById/${this.ruleForm.sid}/${this.ruleForm.cid}/${this.ruleForm.tid}/${this.ruleForm.term}`)
+        .then(function (resp) {
+          that.ruleForm = resp.data
+        })
   },
   methods: {
     submitForm(formName) {
@@ -84,7 +83,7 @@ export default {
           const tid = that.ruleForm.tid
           const term = that.ruleForm.term
           const grade = that.ruleForm.grade
-          axios.get("http://192.168.76.30:10085/SCT/updateById/" + sid + '/' + cid + '/' + tid + '/' + term + '/' + grade).then(function (resp) {
+          axios.get(`${BASE_URL}/SCT/updateById/${sid}/${cid}/${tid}/${term}/${grade}`).then(function (resp) {
             if (resp.data === true) {
               that.$message({
                 showClose: true,

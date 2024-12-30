@@ -16,6 +16,9 @@
   </div>
 </template>
 <script>
+
+import {BASE_URL} from "@/config";
+
 export default {
   data() {
     return {
@@ -42,7 +45,7 @@ export default {
           const that = this
           // console.log(this.ruleForm)
 
-          axios.post("http://192.168.76.30:10085/course/save", this.ruleForm).then(function (resp) {
+          axios.post(`${BASE_URL}/course/save`, this.ruleForm).then(function (resp) {
             console.log(resp)
             if (resp.data === true) {
               that.$message({

@@ -22,6 +22,7 @@
   </el-container>
 </template>
 <script>
+import {BASE_URL} from "@/config";
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
@@ -88,7 +89,7 @@ export default {
             }
           }
 
-          axios.post('http://192.168.76.30:10085/' + type + '/update' + ss, form).then(function (resp) {
+          axios.post(axios.post(`${BASE_URL}/${type}/update${ss}`, form)).then(function (resp) {
             if (resp.data === true) {
               that.$message({
                 showClose: true,

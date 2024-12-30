@@ -48,6 +48,7 @@
 <script>
 import GradeCourseList from "@/views/Admin/gradeCourseManage/gradeCourseList";
 import TeacherGradeCourseList from "@/views/Teacher/teacherGradeCourseManage/teacherGradeCourseList";
+import {BASE_URL} from "@/config";
 export default {
   components: {TeacherGradeCourseList, GradeCourseList},
   data() {
@@ -90,7 +91,7 @@ export default {
   },
   created() {
     const that = this
-    axios.get('http://192.168.76.30:10085/SCT/findAllTerm').then(function (resp) {
+    axios.get(`${BASE_URL}/SCT/findAllTerm`).then(function (resp) {
       that.termList = resp.data
     })
   },

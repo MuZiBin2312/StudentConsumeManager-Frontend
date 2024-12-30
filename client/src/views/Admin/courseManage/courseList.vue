@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   methods: {
     select(row) {
@@ -58,7 +60,7 @@ export default {
     },
     deleteTeacher(row) {
       const that = this
-      axios.get('http://192.168.76.30:10085/course/deleteById/' + row.cid).then(function (resp) {
+      axios.get(`${BASE_URL}/course/deleteById/${row.cid}`).then(function (resp) {
         console.log(resp)
         if (resp.data === true) {
           that.$message({
@@ -89,7 +91,7 @@ export default {
       const term = sessionStorage.getItem("currentTerm")
 
       const that = this
-      axios.get('http://192.168.76.30:10085/courseTeacher/insert/' + cid + '/' + tid + '/' + term).then(function (resp) {
+      axios.get(`${BASE_URL}/courseTeacher/insert/${cid}/${tid}/${term}`).then(function (resp) {
         if (resp.data === true) {
           that.$message({
             showClose: true,
@@ -151,7 +153,7 @@ export default {
         that.tmpList = null
         that.total = null
         that.tableData = null
-        axios.post("http://192.168.76.30:10085/course/findBySearch", newRuleForm).then(function (resp) {
+        axios.post(`${BASE_URL}/course/findBySearch`, newRuleForm).then(function (resp) {
           console.log("查询结果:");
           console.log(resp)
           that.tmpList = resp.data

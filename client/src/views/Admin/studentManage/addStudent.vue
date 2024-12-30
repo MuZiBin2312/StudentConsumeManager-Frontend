@@ -16,6 +16,8 @@
   </div>
 </template>
 <script>
+import {BASE_URL} from "@/config";
+
 export default {
   data() {
     return {
@@ -41,7 +43,7 @@ export default {
           // 通过前端校验
           const that = this
           console.log(this.ruleForm)
-          axios.post("http://192.168.76.30:10085/student/addStudent", this.ruleForm).then(function (resp) {
+          axios.post(`${BASE_URL}/student/addStudent`, this.ruleForm).then(function (resp) {
             if (resp.data === true) {
               that.$message({
                 showClose: true,

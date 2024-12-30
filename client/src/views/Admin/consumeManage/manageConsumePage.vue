@@ -77,8 +77,8 @@
 </template>
 
 <script>
-import axios from "axios";
-
+import axios from 'axios';
+import {BASE_URL} from "@/config";
 export default {
   data() {
     return {
@@ -101,9 +101,11 @@ export default {
   },
   methods: {
     fetchConsumeData() {
-      axios.get("http://192.168.76.30:10085/record/all").then((response) => {
-        console.log(response);
-        
+      console.log(sessionStorage.getItem('id'));
+      axios.get(`${BASE_URL}/record/all`).then((response) => {
+        console.log(sessionStorage.getItem('id'));
+        this.consumeList = response.data.data;
+                
         this.consumeList = response.data.data;
       });
     },
@@ -128,37 +130,27 @@ export default {
     saveConsume() {
       this.form.studentId = sessionStorage.getItem("id");
       if (this.isEdit) {
-        axios
-          .put(`http://192.168.76.30:10085/record/${this.form.recordId}`, this.form)
-          .then((response) => {
-            console.log(response);
-            
-            this.$message.success("记录更新成功");
-            this.dialogVisible = false;
-            this.fetchConsumeData();
-          });
+
+        axios.put(`${BASE_URL}/record/${this.form.recordId}`, this.form).then(() => {
+          this.$message.success('记录更新成功');
+          this.dialogVisible = false;
+          this.fetchConsumeData();
+        });
       } else {
-        axios
-          .post("http://192.168.76.30:10085/record/addRecord", this.form)
-          .then(() => {
-            this.$message.success("记录添加成功");
-            this.dialogVisible = false;
-            this.fetchConsumeData();
-          });
+        axios.post(`${BASE_URL}/record/addRecord`, this.form).then(() => {
+          this.$message.success('记录添加成功');
+          this.dialogVisible = false;
+          this.fetchConsumeData();
+        });
       }
     },
     deleteConsume(recordId) {
-      axios
-        .delete(`http://192.168.76.30:10085/record/delete/${recordId.recordId}`)
-        .then(() => {
-          this.$message.success("记录删除成功");
-          this.fetchConsumeData();
-        });
-    },
-    getCurrentTime() {
-      const now = new Date();
-      return now.toISOString().slice(0, 19).replace("T", " "); // 格式化为 yyyy-MM-dd HH:mm:ss
-    },
+      console.log(recordId);
+      
+      axios.delete(`${BASE_URL}/record/delete/${recordId.recordId}`).then(() => {
+        this.$message.success('记录删除成功');
+        this.fetchConsumeData();
+      });    },
   },
   mounted() {
     this.fetchConsumeData();
