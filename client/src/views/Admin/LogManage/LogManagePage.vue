@@ -59,6 +59,18 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!-- 分页组件 -->
+        <el-pagination
+            style="margin-top: 20px"
+            background
+            layout="prev, pager, next, jumper, total"
+            :total="pagination.total"
+            :page-size="pagination.pageSize"
+            :current-page="pagination.currentPage"
+            @current-change="handlePageChange"
+        />
+
       </el-main>
     </el-container>
   </div>
@@ -72,6 +84,7 @@ export default {
   data() {
     return {
       logList: [], // 日志列表数据
+      allLogs: [], // 所有日志
       filters: {
         module: null,
         action: null,
@@ -79,6 +92,11 @@ export default {
         status: null,
         startTime: null,
         endTime: null,
+      },
+      pagination: {
+        currentPage: 1, // 当前页码
+        pageSize: 10, // 每页条数
+        total: 0, // 总数据条数
       },
     };
   },
@@ -91,26 +109,33 @@ export default {
         status: this.filters.status || null,
         startTime: this.filters.startTime || null,
         endTime: this.filters.endTime || null,
+        page: this.pagination.currentPage, // 当前页码
+        size: this.pagination.pageSize, // 每页条数
       };
 
       axios
           .post(`${BASE_URL}/log/search`, requestData, {
             headers: {
-              userid: '1',
-              username: '1',
-              'Content-Type': 'application/json',
+              userid: "1",
+              username: "1",
+              "Content-Type": "application/json",
             },
           })
           .then((response) => {
             if (response.data && response.data.data) {
-              this.logList = response.data.data; // 更新日志列表
+              // 全量数据保存并排序
+              this.allLogs = response.data.data.sort(
+                  (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+              );
+              this.pagination.total = this.allLogs.length; // 更新总数
+              this.updateLogList(); // 更新当前页数据
             } else {
-              this.$message.error('未获取到日志数据');
+              this.$message.error("未获取到日志数据");
             }
           })
           .catch((error) => {
             console.error(error);
-            this.$message.error('获取日志数据失败');
+            this.$message.error("获取日志数据失败");
           });
     },
     resetFilters() {
@@ -123,6 +148,8 @@ export default {
         startTime: "",
         endTime: "",
       };
+      this.currentPage = 1; // 重置为第一页
+      this.fetchLogData();
     },
     formatTimestamp(timestamp) {
       if (!timestamp) return "";
@@ -135,7 +162,17 @@ export default {
       const seconds = String(date.getSeconds()).padStart(2, "0");
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
+    updateLogList() {
+      const start = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+      const end = start + this.pagination.pageSize;
+      this.logList = this.allLogs.slice(start, end);
+    },
+    handlePageChange(page) {
+      this.pagination.currentPage = page;
+      this.updateLogList();
+    },
   },
+
   mounted() {
     this.fetchLogData();
   },

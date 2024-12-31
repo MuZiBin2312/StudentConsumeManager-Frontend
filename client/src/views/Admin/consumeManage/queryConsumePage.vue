@@ -23,7 +23,7 @@
       </el-table>
     </div>
   </template>
-  
+
   <script>
   export default {
     data() {
@@ -38,22 +38,21 @@
     },
     methods: {
       searchConsume() {
-        
+
       },
     },
     created() {
       // 模拟获取数据
       this.consumeData = [
-        
+
       ];
       this.filteredData = this.consumeData; // 初始化显示所有数据
     },
   };
   </script>
-  
+
   <style scoped>
   h2 {
     margin-bottom: 20px;
   }
   </style>
-  
