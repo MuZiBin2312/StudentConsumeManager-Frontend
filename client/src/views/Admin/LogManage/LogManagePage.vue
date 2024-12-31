@@ -5,21 +5,53 @@
         <!-- 筛选条件表单 -->
         <el-form :model="filters" inline label-width="120px">
           <el-form-item label="模块">
-            <el-input v-model="filters.module" placeholder="模块"></el-input>
+            <el-select v-model="filters.module" placeholder="选择模块" clearable>
+              <el-option
+                  v-for="module in filterOptions.modules"
+                  :key="module"
+                  :label="module"
+                  :value="module"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="操作">
-            <el-input v-model="filters.action" placeholder="操作"></el-input>
+            <el-select v-model="filters.action" placeholder="选择操作" clearable>
+              <el-option
+                  v-for="action in filterOptions.actions"
+                  :key="action"
+                  :label="action"
+                  :value="action"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="操作人">
-            <el-input v-model="filters.operator" placeholder="操作人"></el-input>
+            <el-select v-model="filters.operator" placeholder="选择操作人" clearable>
+              <el-option
+                  v-for="operator in filterOptions.operators"
+                  :key="operator"
+                  :label="operator"
+                  :value="operator"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="请求 ID">
-            <el-input v-model="filters.requestId" placeholder="请求 ID"></el-input>
+            <el-select v-model="filters.requestId" placeholder="选择请求 ID" clearable>
+              <el-option
+                  v-for="requestId in filterOptions.requestIds"
+                  :key="requestId"
+                  :label="requestId"
+                  :value="requestId"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="filters.status" placeholder="请选择状态">
-              <el-option label="成功" value="成功"></el-option>
-              <el-option label="失败" value="失败"></el-option>
+            <el-select v-model="filters.status" placeholder="请选择状态" clearable>
+              <el-option
+                  v-for="status in filterOptions.statuses"
+                  :key="status"
+                  :label="status"
+                  :value="status"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="开始时间">
@@ -48,12 +80,31 @@
 
         <!-- 日志数据表格 -->
         <el-table :data="logList" style="width: 100%; margin-top: 20px">
+          <!-- 序号列 -->
+          <el-table-column label="序号" width="60">
+            <template slot-scope="scope">
+              {{ calculateIndex(scope.$index) }}
+            </template>
+          </el-table-column>
           <el-table-column prop="module" label="模块"></el-table-column>
           <el-table-column prop="action" label="操作"></el-table-column>
           <el-table-column prop="operator" label="操作人"></el-table-column>
           <el-table-column prop="requestId" label="请求 ID"></el-table-column>
           <el-table-column prop="status" label="状态"></el-table-column>
-          <el-table-column prop="timestamp" label="时间">
+          <el-table-column label="时间">
+            <template slot="header">
+              <div style="display: flex; align-items: center">
+                时间
+                <el-button
+                    size="mini"
+                    type="text"
+                    @click="toggleSortOrder"
+                    style="margin-left: 10px"
+                >
+                  {{ sortOrder === 'desc' ? '最新 → 最早' : '最早 → 最新' }}
+                </el-button>
+              </div>
+            </template>
             <template slot-scope="scope">
               {{ formatTimestamp(scope.row.timestamp) }}
             </template>
@@ -61,16 +112,16 @@
         </el-table>
 
         <!-- 分页组件 -->
-        <el-pagination
-            style="margin-top: 20px"
-            background
-            layout="prev, pager, next, jumper, total"
-            :total="pagination.total"
-            :page-size="pagination.pageSize"
-            :current-page="pagination.currentPage"
-            @current-change="handlePageChange"
-        />
-
+        <div style="display: flex; justify-content: center; margin-top: 20px">
+          <el-pagination
+              background
+              layout="prev, pager, next, jumper, total"
+              :total="pagination.total"
+              :page-size="pagination.pageSize"
+              :current-page="pagination.currentPage"
+              @current-change="handlePageChange"
+          />
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -83,84 +134,101 @@ import { BASE_URL } from "@/config";
 export default {
   data() {
     return {
-      logList: [], // 日志列表数据
-      allLogs: [], // 所有日志
+      logList: [],
+      allLogs: [],
       filters: {
         module: null,
         action: null,
         operator: null,
+        requestId: null,
         status: null,
         startTime: null,
         endTime: null,
       },
-      pagination: {
-        currentPage: 1, // 当前页码
-        pageSize: 10, // 每页条数
-        total: 0, // 总数据条数
+      filterOptions: {
+        modules: [],
+        actions: [],
+        operators: [],
+        requestIds: [],
+        statuses: [],
       },
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      sortOrder: "desc", // 排序顺序：'desc' 或 'asc'
     };
   },
   methods: {
     fetchLogData() {
       const requestData = {
-        module: this.filters.module || null,
-        action: this.filters.action || null,
-        operator: this.filters.operator || null,
-        status: this.filters.status || null,
-        startTime: this.filters.startTime || null,
-        endTime: this.filters.endTime || null,
-        page: this.pagination.currentPage, // 当前页码
-        size: this.pagination.pageSize, // 每页条数
+        module: this.filters.module,
+        action: this.filters.action,
+        operator: this.filters.operator,
+        requestId: this.filters.requestId,
+        status: this.filters.status,
+        startTime: this.filters.startTime,
+        endTime: this.filters.endTime,
+        page: this.pagination.currentPage,
+        size: this.pagination.pageSize,
       };
 
       axios
-          .post(`${BASE_URL}/log/search`, requestData, {
-            headers: {
-              userid: "1",
-              username: "1",
-              "Content-Type": "application/json",
-            },
-          })
+          .post(`${BASE_URL}/log/search`, requestData)
           .then((response) => {
             if (response.data && response.data.data) {
-              // 全量数据保存并排序
-              this.allLogs = response.data.data.sort(
-                  (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-              );
-              this.pagination.total = this.allLogs.length; // 更新总数
-              this.updateLogList(); // 更新当前页数据
+              this.allLogs = response.data.data;
+              this.sortLogs(); // 加载数据后默认排序
+              this.extractFilterOptions();
+              this.pagination.total = this.allLogs.length;
+              this.updateLogList();
             } else {
               this.$message.error("未获取到日志数据");
             }
           })
-          .catch((error) => {
-            console.error(error);
+          .catch(() => {
             this.$message.error("获取日志数据失败");
           });
     },
+    sortLogs() {
+      this.allLogs.sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return this.sortOrder === "desc" ? timeB - timeA : timeA - timeB;
+      });
+      this.updateLogList(); // 更新当前页数据
+    },
+    toggleSortOrder() {
+      this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
+      this.sortLogs();
+    },
+    extractFilterOptions() {
+      const uniqueValues = (key) =>
+          [...new Set(this.allLogs.map((log) => log[key]))].filter((item) => item);
+
+      this.filterOptions.modules = uniqueValues("module");
+      this.filterOptions.actions = uniqueValues("action");
+      this.filterOptions.operators = uniqueValues("operator");
+      this.filterOptions.requestIds = uniqueValues("requestId");
+      this.filterOptions.statuses = uniqueValues("status");
+    },
     resetFilters() {
       this.filters = {
-        module: "",
-        action: "",
-        operator: "",
-        requestId: "",
-        status: "",
-        startTime: "",
-        endTime: "",
+        module: null,
+        action: null,
+        operator: null,
+        requestId: null,
+        status: null,
+        startTime: null,
+        endTime: null,
       };
-      this.currentPage = 1; // 重置为第一页
       this.fetchLogData();
     },
     formatTimestamp(timestamp) {
       if (!timestamp) return "";
       const date = new Date(timestamp);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      return date.toLocaleString("zh-CN", { hour12: false });
     },
     updateLogList() {
       const start = (this.pagination.currentPage - 1) * this.pagination.pageSize;
@@ -171,8 +239,10 @@ export default {
       this.pagination.currentPage = page;
       this.updateLogList();
     },
+    calculateIndex(index) {
+      return (this.pagination.currentPage - 1) * this.pagination.pageSize + index + 1;
+    },
   },
-
   mounted() {
     this.fetchLogData();
   },
