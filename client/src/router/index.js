@@ -90,31 +90,19 @@ const routes = [
         meta: {requireAuth: true}, // 学生和管理员都可访问
         children: [
           {
-            path: '/queryConsumePage', 
+            path: '/queryConsumePage',
             name: '查询消费记录',
             component: queryConsumeManagePage,
-            meta: {requireAuth: true} 
+            meta: {requireAuth: true}
           },
           {
-            path: '/manageConsumePage', 
+            path: '/manageConsumePage',
             name: '管理消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true} // 仅管理员可访问
           }
-        ]
-      },
-      {
-        path: '/LogManage',
-        name: '日志管理',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
-        children: [
-          {
-            path: '/LogManagePage',
-            name: '日志记录',
-            component: LogManagePage,
-            meta: {requireAuth: true}
-          }
+
+
         ]
       },
       {
@@ -124,16 +112,16 @@ const routes = [
         meta: {requireAuth: true},
         children: [
           {
-            path: '/addStudent',
-            name: '添加学生',
-            component: addStudent,
-            meta: {requireAuth: true}
-          },
-          {
             path: '/studentList',
             name: '学生列表',
             component: studentList,
             meta: {requireAuth: true},
+          },
+          {
+            path: '/addStudent',
+            name: '添加学生',
+            component: addStudent,
+            meta: {requireAuth: true}
           },
           {
             path: '/editorStudent',
@@ -156,6 +144,7 @@ const routes = [
           }
         ]
       },
+
       {
         path: '/teacherManage',
         name: '教师管理',
@@ -182,6 +171,20 @@ const routes = [
             component: editorTeacher,
             meta: {requireAuth: true}
           },
+        ]
+      },
+      {
+        path: '/LogManage',
+        name: '日志管理',
+        component: consumeManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/LogManagePage',
+            name: '日志记录',
+            component: LogManagePage,
+            meta: {requireAuth: true}
+          }
         ]
       },
       {

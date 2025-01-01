@@ -3,10 +3,10 @@
     <div
         style="
         width: 90%;
-        margin: 50px auto;
-        padding: 50px;
+        margin: 20px auto;
+        padding: 40px;
         border: 3px solid #dcdcdc;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         border-radius: 15px;
         background-color: #ffffff;
       "
@@ -23,7 +23,7 @@
             style="
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 30px 40px;
+            gap: 20px 30px;
           "
         >
           <!-- 第一列 -->
@@ -31,7 +31,7 @@
             <el-input
                 v-model="ruleForm.sid"
                 placeholder="请输入学生ID"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
                 disabled
             ></el-input>
           </el-form-item>
@@ -40,7 +40,7 @@
                 v-model="ruleForm.password"
                 show-password
                 placeholder="请输入密码"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             ></el-input>
           </el-form-item>
           <!-- 第二列 -->
@@ -48,14 +48,14 @@
             <el-input
                 v-model="ruleForm.sname"
                 placeholder="请输入学生姓名"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             ></el-input>
           </el-form-item>
           <el-form-item label="民族" prop="ethnicity">
             <el-select
                 v-model="ruleForm.ethnicity"
                 placeholder="请选择民族"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             >
               <el-option
                   v-for="ethnicity in ethnicities"
@@ -70,14 +70,14 @@
             <el-input
                 v-model="ruleForm.idNumber"
                 placeholder="请输入身份证号"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             ></el-input>
           </el-form-item>
           <el-form-item label="政治面貌" prop="politicalStatus">
             <el-select
                 v-model="ruleForm.politicalStatus"
                 placeholder="请选择政治面貌"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             >
               <el-option label="党员" value="党员"></el-option>
               <el-option label="团员" value="团员"></el-option>
@@ -89,7 +89,7 @@
             <el-select
                 v-model="ruleForm.campus"
                 placeholder="请选择校区"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             >
               <el-option label="南校区" value="南校区"></el-option>
               <el-option label="北校区" value="北校区"></el-option>
@@ -99,7 +99,7 @@
             <el-select
                 v-model="ruleForm.college"
                 placeholder="请选择学院"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             >
               <el-option
                   v-for="college in colleges"
@@ -114,7 +114,7 @@
             <el-input
                 v-model="ruleForm.subject"
                 placeholder="请输入专业"
-                style="width: 280px; height: 40px; font-size: 15px;"
+                style="width: 260px; height: 40px; font-size: 15px;"
             ></el-input>
           </el-form-item>
           <el-form-item label="年级" prop="grade">
@@ -133,7 +133,7 @@
           </el-form-item>
         </div>
         <!-- 按钮 -->
-        <el-form-item style="text-align: center; margin-top: 40px; margin-left: -50px;">
+        <el-form-item style="text-align: center; margin-top: 40px; margin-left: -80px;">
           <el-button type="primary" @click="submitForm('ruleForm')" style="padding: 12px 30px;">
             提交
           </el-button>
@@ -143,7 +143,7 @@
           >
             重置
           </el-button>
-          <el-button @click="test" style="padding: 12px 30px; margin-left: 30px;">测试</el-button>
+          <el-button @click="returnList" style="padding: 12px 30px; margin-left: 30px;">返回</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -270,6 +270,12 @@ export default {
     },
     test() {
       console.log(this.ruleForm);
+    },
+    returnList() {
+      // 执行测试操作
+      this.test();
+      // 跳转回学生列表页面
+      this.$router.push("/studentList");
     },
   },
 };

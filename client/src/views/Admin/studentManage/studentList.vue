@@ -3,156 +3,273 @@
     <el-table
         :data="tableData"
         border
-        style="width: 100%">
+        stripe
+        style="width: 100%"
+        :header-cell-style="{ backgroundColor: '#f5f5f5', color: '#333', fontWeight: 'bold' }"
+        :cell-style="{ whiteSpace: 'nowrap' }"
+        :style="{ minWidth: '800px' }"
+    >
+      <!-- 序号列 -->
       <el-table-column
-          fixed
+          fixed="left"
+          label="序号"
+          width="75"
+          align="center"
+      >
+        <template slot-scope="scope">
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
+
+      <!-- 学号 -->
+      <el-table-column
           prop="sid"
           label="学号"
-          width="150">
-      </el-table-column>
+          width="115"
+          fixed="left"
+      />
+
+      <!-- 姓名 -->
       <el-table-column
           prop="sname"
           label="姓名"
-          width="120">
-      </el-table-column>
+          width="115"
+      />
+
+      <!-- 密码 -->
       <el-table-column
           prop="password"
           label="密码"
-          width="120">
-      </el-table-column>
-      <el-table-column
-          label="操作"
-          width="100">
+          width="145"
+      >
         <template slot-scope="scope">
+          <span>
+            {{ scope.row.passwordVisible ? scope.row.password : '●●●●●●' }}
+          </span>
+          <el-button
+              @click="togglePasswordVisibility(scope.row)"
+              type="text"
+              icon="el-icon-view"
+              style="margin-left: 10px; padding: 0; font-size: 14px;"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- 学院 -->
+      <el-table-column
+          prop="college"
+          label="学院"
+          width="145"
+      />
+
+      <!-- 民族 -->
+      <el-table-column
+          prop="ethnicity"
+          label="民族"
+          width="95"
+      />
+
+      <!-- 身份证号 -->
+      <el-table-column
+          prop="idNumber"
+          label="身份证号"
+          width="175"
+      />
+
+      <!-- 政治面貌 -->
+      <el-table-column
+          prop="politicalStatus"
+          label="政治面貌"
+          width="115"
+      />
+
+      <!-- 年级 -->
+      <el-table-column
+          prop="grade"
+          label="年级"
+          width="95"
+      />
+
+      <!-- 专业 -->
+      <el-table-column
+          prop="subject"
+          label="专业"
+          width="145"
+      />
+
+      <!-- 校区 -->
+      <el-table-column
+          prop="campus"
+          label="校区"
+          width="115"
+      />
+
+      <!-- 操作 -->
+      <el-table-column
+          fixed="right"
+          label="操作"
+          width="145"
+      >
+        <template slot-scope="scope">
+          <el-button
+              @click="editor(scope.row)"
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              style="margin-right: 5px;"
+          />
           <el-popconfirm
-              confirm-button-text='删除'
-              cancel-button-text='取消'
-              icon="el-icon-info"
+              confirm-button-text="删除"
+              cancel-button-text="取消"
+              icon="el-icon-warning"
               icon-color="red"
-              title="删除不可复原"
+              title="删除后无法恢复，确认继续？"
               @confirm="deleteStudent(scope.row)"
           >
-            <el-button slot="reference" type="text" size="small">删除</el-button>
+            <el-button
+                slot="reference"
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+            />
           </el-popconfirm>
-          <el-button @click="editor(scope.row)" type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="total"
-        :page-size="pageSize"
-        @current-change="changePage"
-    >
-    </el-pagination>
+
+    <!-- 分页器 -->
+    <div style="display: flex; justify-content: right; margin-top: 20px;">
+      <el-pagination
+          background
+          layout="prev, pager, next, jumper, total"
+          :total="total"
+          :page-size="pageSize"
+          :current-page="currentPage"
+          @current-change="changePage"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import {BASE_URL} from "@/config";
+import { BASE_URL } from "@/config";
 
 export default {
+  data() {
+    return {
+      tableData: null,
+      pageSize: 10,
+      total: null,
+      currentPage: 1,
+      ruleForm: null,
+      tmpList: null,
+    };
+  },
   methods: {
     deleteStudent(row) {
-      const that = this
-      axios.get(`${BASE_URL}/student/deleteById/` + row.sid).then(function (resp) {
-        if (resp.data === true) {
-          that.$message({
-            showClose: true,
-            message: '删除成功',
-            type: 'success'
+      const that = this;
+      axios
+          .get(`${BASE_URL}/student/deleteById/` + row.sid)
+          .then(function (resp) {
+            if (resp.data === true) {
+              that.$message({
+                showClose: true,
+                message: "删除成功",
+                type: "success",
+              });
+              if (that.tmpList === null) {
+                window.location.reload();
+              } else {
+                that.$router.push("/queryStudent");
+              }
+            } else {
+              that.$message({
+                showClose: true,
+                message: "删除出错，请检查数据库连接",
+                type: "error",
+              });
+            }
+          })
+          .catch(function () {
+            that.$message({
+              showClose: true,
+              message: "删除失败，可能存在外键依赖",
+              type: "error",
+            });
           });
-          console.log(that.tmpList === null)
-          if (that.tmpList === null) {
-            window.location.reload()
-          }
-          else {
-            that.$router.push('/queryStudent')
-          }
-        }
-        else {
-          that.$message({
-            showClose: true,
-            message: '删除出错，请查询数据库连接',
-            type: 'error'
-          });
-        }
-      }).catch(function (e) {
-        that.$message({
-          showClose: true,
-          message: '删除出错，存在外键依赖',
-          type: 'error'
-        });
-      })
     },
     changePage(page) {
-      page = page - 1
+      this.currentPage = page;
+      page -= 1;
       if (this.tmpList === null) {
-        const that = this
-        axios.get(`${BASE_URL}/student/findByPage/${page}/${that.pageSize}`).then(function (resp) {
-          that.tableData = resp.data
-        })
-      }
-      else {
-        let that = this
-        let start = page * that.pageSize, end = that.pageSize * (page + 1)
-        let length = that.tmpList.length
-        let ans = end < length ? end : length
-        that.tableData = that.tmpList.slice(start, ans)
+        const that = this;
+        axios
+            .get(`${BASE_URL}/student/findByPage/${page}/${that.pageSize}`)
+            .then(function (resp) {
+              that.tableData = resp.data.map((item) => ({
+                ...item,
+                passwordVisible: false,
+              }));
+            });
+      } else {
+        const that = this;
+        const start = page * that.pageSize,
+            end = that.pageSize * (page + 1);
+        const length = that.tmpList.length;
+        const ans = end < length ? end : length;
+        that.tableData = that.tmpList.slice(start, ans).map((item) => ({
+          ...item,
+          passwordVisible: false,
+        }));
       }
     },
     editor(row) {
       this.$router.push({
-        path: '/editorStudent',
+        path: "/editorStudent",
         query: {
-          sid: row.sid
-        }
-      })
-    }
+          sid: row.sid,
+        },
+      });
+    },
+    togglePasswordVisibility(row) {
+      row.passwordVisible = !row.passwordVisible;
+    },
   },
-
-  data() {
-    return {
-      tableData: null,
-      pageSize: 7,
-      total: null,
-      ruleForm: null,
-      tmpList: null
-    }
-  },
-
   created() {
-    if (this.tmpList !== null)
-      this.tmpList = null
-    const that = this
-    // 是否从查询页跳转
-    this.ruleForm = this.$route.query.ruleForm
-    if (this.$route.query.ruleForm === undefined || (this.ruleForm.sid === null && this.ruleForm.sname === null)) {
+    if (this.tmpList !== null) this.tmpList = null;
+    const that = this;
+    this.ruleForm = this.$route.query.ruleForm;
+    if (
+        this.$route.query.ruleForm === undefined ||
+        (this.ruleForm.sid === null && this.ruleForm.sname === null)
+    ) {
       axios.get(`${BASE_URL}/student/getLength`).then(function (resp) {
-        console.log("获取列表总长度: " + resp.data)
-        that.total = resp.data
-      })
-
-      axios.get(`${BASE_URL}/student/findByPage/0/${that.pageSize}`).then(function (resp) {
-        that.tableData = resp.data
-      })
+        that.total = resp.data;
+      });
+      axios
+          .get(`${BASE_URL}/student/findByPage/0/${that.pageSize}`)
+          .then(function (resp) {
+            that.tableData = resp.data.map((item) => ({
+              ...item,
+              passwordVisible: false,
+            }));
+          });
+    } else {
+      axios
+          .post(`${BASE_URL}/student/findBySearch`, this.ruleForm)
+          .then(function (resp) {
+            that.tmpList = resp.data;
+            that.total = resp.data.length;
+            const start = 0,
+                end = that.pageSize;
+            const length = that.tmpList.length;
+            const ans = end < length ? end : length;
+            that.tableData = that.tmpList.slice(start, ans).map((item) => ({
+              ...item,
+              passwordVisible: false,
+            }));
+          });
     }
-    else {
-      // 从查询页跳转并且含查询
-      console.log('正在查询跳转数据')
-      console.log(this.ruleForm)
-      axios.post(`${BASE_URL}/student/findBySearch`, this.ruleForm).then(function (resp) {
-        console.log('获取查询数据：')
-        that.tmpList = resp.data
-        that.total = resp.data.length
-        console.log(that.tmpList)
-        let start = 0, end = that.pageSize
-        let length = that.tmpList.length
-        let ans = end < length ? end : length
-        that.tableData = that.tmpList.slice(start, ans)
-      })
-    }
-  }
-}
+  },
+};
 </script>

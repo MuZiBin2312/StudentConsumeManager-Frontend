@@ -3,7 +3,7 @@
     <div
         style="
         width: 90%;
-        margin: 50px auto;
+        margin: 20px auto;
         padding: 40px;
         border: 3px solid #dcdcdc;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
@@ -142,7 +142,7 @@
           >
             重置
           </el-button>
-          <el-button @click="test" style="padding: 12px 30px; margin-left: 30px;">test</el-button>
+          <el-button @click="returnList" style="padding: 12px 30px; margin-left: 30px;">返回</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -242,6 +242,12 @@ export default {
     },
     test() {
       console.log(this.ruleForm);
+    },
+    returnList() {
+      // 执行测试操作
+      this.test();
+      // 跳转回学生列表页面
+      this.$router.push("/studentList");
     },
   },
 };
