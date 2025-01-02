@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-container>
+
       <el-main>
         <!-- 筛选条件 -->
         <el-row :gutter="20" style="margin-bottom: 20px;">
@@ -15,7 +16,7 @@
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="filters.consumptionType" placeholder="类别">
+            <el-select v-model="filters.consumptionType" placeholder="消费类别">
               <el-option
                   v-for="(item, index) in consumptionOptions"
                   :key="index"
@@ -44,7 +45,7 @@
             <el-input v-model="filters.recordId" placeholder="编号"></el-input>
           </el-col>
           <el-col :span="4">
-            <el-input v-model="filters.studentId" placeholder="消费者ID"></el-input>
+            <el-input v-model="filters.studentId" placeholder="学号"></el-input>
           </el-col>
           <el-col :span="4">
             <el-button type="primary" @click="applyFilters">筛选</el-button>
@@ -71,6 +72,15 @@
               </el-upload>
             </el-button>
           </el-col>
+
+          <el-col :span="2">
+            <el-button type="info" @click="downloadTemplate">
+              下载模板
+            </el-button>
+          </el-col>
+
+
+
           <el-col :span="2">
             <el-button
                 type="danger"
@@ -89,14 +99,28 @@
             ref="consumeTable"
         >
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="recordId" label="编号" width="80"></el-table-column>
+          <el-table-column prop="recordId" label="编号" width="80">
+            <template slot="header">
+              <div style="display: flex; align-items: center">
+                编号
+                <el-button
+                    size="mini"
+                    type="text"
+                    @click="toggleIndexSortOrder"
+                    style="margin-left: 5px"
+                >
+                  {{ indexSortOrder === 'desc' ? '降序' : '升序' }}
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="name" label="商品名"></el-table-column>
-          <el-table-column prop="amount" label="价格"></el-table-column>
-          <el-table-column prop="consumptionType" label="类别"></el-table-column>
+          <el-table-column prop="amount" label="金额"></el-table-column>
+          <el-table-column prop="consumptionType" label="消费类别"></el-table-column>
           <el-table-column prop="time" label="时间"></el-table-column>
           <el-table-column prop="paymentType" label="支付方式"></el-table-column>
           <el-table-column prop="location" label="位置"></el-table-column>
-          <el-table-column prop="studentId" label="消费者ID"></el-table-column>
+          <el-table-column prop="studentId" label="学号"></el-table-column>
           <el-table-column label="操作" width="180">
             <template #default="scope">
               <el-button size="mini" type="warning" @click="openEditDialog(scope.row)">编辑</el-button>
@@ -127,11 +151,11 @@
         <el-form-item label="商品名">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="价格">
+        <el-form-item label="金额">
           <el-input v-model.number="form.amount"></el-input>
         </el-form-item>
-        <el-form-item label="类别">
-          <el-select v-model="form.consumptionType" placeholder="请选择类别">
+        <el-form-item label="消费类别">
+          <el-select v-model="form.consumptionType" placeholder="请选择消费类别">
             <el-option
                 v-for="(item, index) in consumptionOptions"
                 :key="index"
@@ -179,6 +203,7 @@ export default {
   data() {
     return {
       consumeList: [], // 全部数据
+      indexSortOrder: "asc", // 默认升序
       dialogVisible: false,
       form: {
         recordId: "",
@@ -208,6 +233,7 @@ export default {
     };
   },
   computed: {
+
     // 计算当前页的数据
     currentPageData() {
       const start = (this.currentPage - 1) * this.pageSize;
@@ -216,6 +242,44 @@ export default {
     },
   },
   methods: {
+    downloadTemplate() {
+      axios
+          .get(`${BASE_URL}/record/exportExcel`, {
+            responseType: "blob", // 指定返回数据类型为 Blob
+          })
+          .then((response) => {
+            // 创建 Blob 对象并生成下载链接
+            const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const url = window.URL.createObjectURL(blob);
+
+            // 创建一个隐藏的链接并触发下载
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "消费记录模板.xlsx"; // 设置下载文件名
+            document.body.appendChild(link);
+            link.click();
+
+            // 清理链接和对象
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            // 提示用户下载成功
+            this.$message.success("模板下载成功");
+          })
+          .catch((error) => {
+            console.error(error);
+            this.$message.error("模板下载失败，请重试");
+          });
+    },
+    toggleIndexSortOrder() {
+      this.indexSortOrder = this.indexSortOrder === "desc" ? "asc" : "desc";
+      this.sortByIndex();
+    },
+    sortByIndex() {
+      this.consumeList.sort((a, b) => {
+        return this.indexSortOrder === "desc" ? b.recordId - a.recordId : a.recordId - b.recordId;
+      });
+    },
     fetchConsumeData() {
       const userType = sessionStorage.getItem("type");
       const userId = sessionStorage.getItem("id");
@@ -238,10 +302,11 @@ export default {
               (!this.filters.consumptionType || record.consumptionType === this.filters.consumptionType) &&
               (!this.filters.location || record.location === this.filters.location) &&
               (!this.filters.name || record.name.includes(this.filters.name)) &&
-              (!this.filters.recordId || record.recordId.toString().includes(this.filters.recordId)) &&
+              (!this.filters.recordId || record.recordId.toString() === this.filters.recordId) && // 修改此行
               (!this.filters.studentId || record.studentId.toString().includes(this.filters.studentId))
           );
         });
+
       });
     },
     applyFilters() {
@@ -293,17 +358,49 @@ export default {
       }
     },
     deleteConsume(record) {
-      axios.delete(`${BASE_URL}/record/delete/${record.recordId}`).then(() => {
-        this.$message.success("记录删除成功");
-        this.fetchConsumeData();
-      });
+      this.$confirm(
+          `确定要删除编号为 ${record.recordId} 的消费记录吗？`,
+          "确认删除",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+      )
+          .then(() => {
+            axios
+                .delete(`${BASE_URL}/record/delete/${record.recordId}`)
+                .then(() => {
+                  this.$message.success("记录删除成功");
+                  this.fetchConsumeData();
+                });
+          })
+          .catch(() => {
+            this.$message.info("已取消删除");
+          });
     },
     batchDelete() {
       const ids = this.selectedRows.map((row) => row.recordId);
-      axios.delete(`${BASE_URL}/record/batchDelete`, { data: ids }).then(() => {
-        this.$message.success("批量删除成功");
-        this.fetchConsumeData();
-      });
+      this.$confirm(
+          `确定要删除选中的 ${ids.length} 条记录吗？`,
+          "确认批量删除",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+      )
+          .then(() => {
+            axios
+                .delete(`${BASE_URL}/record/batchDelete`, { data: ids })
+                .then(() => {
+                  this.$message.success("批量删除成功");
+                  this.fetchConsumeData();
+                });
+          })
+          .catch(() => {
+            this.$message.info("已取消删除");
+          });
     },
     handleSelectionChange(selection) {
       this.selectedRows = selection;
