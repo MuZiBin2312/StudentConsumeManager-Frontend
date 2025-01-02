@@ -38,6 +38,17 @@
           <el-col :span="4">
             <el-input v-model="filters.name" placeholder="商品名"></el-input>
           </el-col>
+
+          <el-col :span="4">
+            <el-switch
+                v-model="filters.isFuzzySearch"
+                active-text="模糊搜索"
+                inactive-text="精准搜索"
+            ></el-switch>
+          </el-col>
+
+
+
         </el-row>
 
         <el-row :gutter="20" style="margin-bottom: 20px;">
@@ -226,6 +237,7 @@ export default {
         name: "",
         recordId: "",
         studentId: "",
+        isFuzzySearch: false, // 模糊查询开关
       },
       selectedRows: [],
       currentPage: 1,
@@ -298,14 +310,33 @@ export default {
 
         this.consumeList = filteredRecords.filter(record => {
           return (
-              (!this.filters.paymentType || record.paymentType === this.filters.paymentType) &&
-              (!this.filters.consumptionType || record.consumptionType === this.filters.consumptionType) &&
-              (!this.filters.location || record.location === this.filters.location) &&
-              (!this.filters.name || record.name.includes(this.filters.name)) &&
-              (!this.filters.recordId || record.recordId.toString() === this.filters.recordId) && // 修改此行
-              (!this.filters.studentId || record.studentId.toString().includes(this.filters.studentId))
+              (!this.filters.paymentType ||
+                  (this.filters.isFuzzySearch
+                      ? record.paymentType.includes(this.filters.paymentType)
+                      : record.paymentType === this.filters.paymentType)) &&
+              (!this.filters.consumptionType ||
+                  (this.filters.isFuzzySearch
+                      ? record.consumptionType.includes(this.filters.consumptionType)
+                      : record.consumptionType === this.filters.consumptionType)) &&
+              (!this.filters.location ||
+                  (this.filters.isFuzzySearch
+                      ? record.location.includes(this.filters.location)
+                      : record.location === this.filters.location)) &&
+              (!this.filters.name ||
+                  (this.filters.isFuzzySearch
+                      ? record.name.includes(this.filters.name)
+                      : record.name === this.filters.name)) &&
+              (!this.filters.recordId ||
+                  (this.filters.isFuzzySearch
+                      ? record.recordId.toString().includes(this.filters.recordId)
+                      : record.recordId.toString() === this.filters.recordId)) &&
+              (!this.filters.studentId ||
+                  (this.filters.isFuzzySearch
+                      ? record.studentId.toString().includes(this.filters.studentId)
+                      : record.studentId.toString() === this.filters.studentId))
           );
         });
+
 
       });
     },
