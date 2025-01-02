@@ -90,12 +90,6 @@ const routes = [
         meta: {requireAuth: true}, // 学生和管理员都可访问
         children: [
           {
-            path: '/queryConsumePage',
-            name: '查询消费记录',
-            component: queryConsumeManagePage,
-            meta: {requireAuth: true}
-          },
-          {
             path: '/manageConsumePage',
             name: '管理消费记录',
             component: manageConsumePage,
@@ -376,14 +370,8 @@ const routes = [
         meta: {requireAuth: true, roles: ['student', 'admin']}, // 学生和管理员都可访问
         children: [
           {
-            path: '/consume/query',
-            name: '查询消费记录',
-            component: queryConsumePage,
-            meta: {requireAuth: true, roles: ['student', 'admin']} // 查询功能所有人可用
-          },
-          {
             path: '/consume/manage',
-            name: '管理消费记录',
+            name: '查询消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true, roles: ['admin']} // 仅管理员可访问
           }

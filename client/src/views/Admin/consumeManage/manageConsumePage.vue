@@ -2,6 +2,56 @@
   <div>
     <el-container>
       <el-main>
+        <!-- 筛选条件 -->
+        <el-row :gutter="20" style="margin-bottom: 20px;">
+          <el-col :span="4">
+            <el-select v-model="filters.paymentType" placeholder="支付方式">
+              <el-option
+                  v-for="(item, index) in paymentOptions"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="filters.consumptionType" placeholder="类别">
+              <el-option
+                  v-for="(item, index) in consumptionOptions"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="filters.location" placeholder="位置">
+              <el-option
+                  v-for="(item, index) in locationOptions"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-input v-model="filters.name" placeholder="商品名"></el-input>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-bottom: 20px;">
+          <el-col :span="4">
+            <el-input v-model="filters.recordId" placeholder="编号"></el-input>
+          </el-col>
+          <el-col :span="4">
+            <el-input v-model="filters.studentId" placeholder="消费者ID"></el-input>
+          </el-col>
+          <el-col :span="4">
+            <el-button type="primary" @click="applyFilters">筛选</el-button>
+            <el-button type="warning" @click="resetFilters" style="margin-left: 10px;">重置</el-button>
+          </el-col>
+        </el-row>
+
         <el-row :gutter="20">
           <el-col :span="2">
             <el-button type="primary" @click="fetchConsumeData">刷新数据</el-button>
@@ -31,6 +81,7 @@
             </el-button>
           </el-col>
         </el-row>
+
         <el-table
             :data="currentPageData"
             style="width: 100%"
@@ -140,10 +191,18 @@ export default {
         studentId: null,
       },
       isEdit: false,
-      paymentOptions: ["校园卡", "微信", "支付宝", "现金", "银行卡", "其他"],
-      consumptionOptions: ["餐饮消费", "学习用品", "娱乐消费", "生活服务", "交通出行", "其他"],
+      paymentOptions: [],
+      consumptionOptions: [],
+      locationOptions: [],
+      filters: {
+        paymentType: "",
+        consumptionType: "",
+        location: "",
+        name: "",
+        recordId: "",
+        studentId: "",
+      },
       selectedRows: [],
-      // 分页数据
       currentPage: 1,
       pageSize: 10,
     };
@@ -158,23 +217,46 @@ export default {
   },
   methods: {
     fetchConsumeData() {
-      // 从 sessionStorage 获取用户类型和 ID
       const userType = sessionStorage.getItem("type");
       const userId = sessionStorage.getItem("id");
 
       axios.get(`${BASE_URL}/record/all`).then((response) => {
         const allRecords = response.data.data;
 
+        this.paymentOptions = [...new Set(allRecords.map(record => record.paymentType))];
+        this.consumptionOptions = [...new Set(allRecords.map(record => record.consumptionType))];
+        this.locationOptions = [...new Set(allRecords.map(record => record.location))];
+
+        let filteredRecords = allRecords;
         if (userType === 'student') {
-          // 筛选出只属于该学生的消费记录
-          this.consumeList = allRecords.filter(record => record.studentId === userId);
-        } else {
-          // 其他类型用户，加载所有记录
-          this.consumeList = allRecords;
+          filteredRecords = allRecords.filter(record => record.studentId === userId);
         }
-      }).catch((error) => {
-        console.error("获取消费记录失败：", error);
+
+        this.consumeList = filteredRecords.filter(record => {
+          return (
+              (!this.filters.paymentType || record.paymentType === this.filters.paymentType) &&
+              (!this.filters.consumptionType || record.consumptionType === this.filters.consumptionType) &&
+              (!this.filters.location || record.location === this.filters.location) &&
+              (!this.filters.name || record.name.includes(this.filters.name)) &&
+              (!this.filters.recordId || record.recordId.toString().includes(this.filters.recordId)) &&
+              (!this.filters.studentId || record.studentId.toString().includes(this.filters.studentId))
+          );
+        });
       });
+    },
+    applyFilters() {
+      this.fetchConsumeData();
+    },
+    resetFilters() {
+      this.filters = {
+        paymentType: "",
+        consumptionType: "",
+        location: "",
+        name: "",
+        recordId: "",
+        studentId: "",
+      };
+      this.fetchConsumeData();
     },
     openAddDialog() {
       this.isEdit = false;
