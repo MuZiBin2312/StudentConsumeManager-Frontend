@@ -65,7 +65,7 @@
                   action=""
                   :http-request="handleFileUpload"
                   :show-file-list="false"
-                  accept=".csv"
+                  accept=".xlsx"
               >
                 <span>批量导入</span>
               </el-upload>
