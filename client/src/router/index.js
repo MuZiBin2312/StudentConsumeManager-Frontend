@@ -445,6 +445,18 @@ export default router
     5. 系统信息 info
  */
 router.beforeEach((to, from, next) => {
+
+  const userId = sessionStorage.getItem('id');
+  const userType = sessionStorage.getItem('type');
+
+  if (userId) {
+    axios.defaults.headers.common['userid'] = String(userId);
+  }
+  if (userType) {
+    axios.defaults.headers.common['usertype'] = String(userType);
+  }
+  next();
+
   console.log(from.path + ' ====> ' + to.path)
   if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
     if (sessionStorage.getItem("token") === 'true') { // 判断本地是否存在token

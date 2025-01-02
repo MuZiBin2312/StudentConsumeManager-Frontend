@@ -69,7 +69,53 @@
     </el-container>
 
     <el-dialog :visible.sync="dialogVisible" title="消费记录">
-      <!-- 表单代码保持不变 -->
+      <el-form :model="form">
+        <el-form-item label="消费编号(自增)">
+          <span>{{ form.recordId }}</span>
+        </el-form-item>
+        <el-form-item label="商品名">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="价格">
+          <el-input v-model.number="form.amount"></el-input>
+        </el-form-item>
+        <el-form-item label="类别">
+          <el-select v-model="form.consumptionType" placeholder="请选择类别">
+            <el-option
+                v-for="(item, index) in consumptionOptions"
+                :key="index"
+                :label="item"
+                :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="时间">
+          <el-date-picker
+              v-model="form.time"
+              type="datetime"
+              format="yyyy-MM-DD HH:mm:ss"
+              value-format="yyyy-MM-DD HH:mm:ss"
+              placeholder="选择时间"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="支付方式">
+          <el-select v-model="form.paymentType" placeholder="请选择支付方式">
+            <el-option
+                v-for="(item, index) in paymentOptions"
+                :key="index"
+                :label="item"
+                :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="地点">
+          <el-input v-model="form.location"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveConsume">保存</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
