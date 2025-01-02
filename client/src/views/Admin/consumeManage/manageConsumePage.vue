@@ -158,8 +158,22 @@ export default {
   },
   methods: {
     fetchConsumeData() {
+      // 从 sessionStorage 获取用户类型和 ID
+      const userType = sessionStorage.getItem("type");
+      const userId = sessionStorage.getItem("id");
+
       axios.get(`${BASE_URL}/record/all`).then((response) => {
-        this.consumeList = response.data.data;
+        const allRecords = response.data.data;
+
+        if (userType === 'student') {
+          // 筛选出只属于该学生的消费记录
+          this.consumeList = allRecords.filter(record => record.studentId === userId);
+        } else {
+          // 其他类型用户，加载所有记录
+          this.consumeList = allRecords;
+        }
+      }).catch((error) => {
+        console.error("获取消费记录失败：", error);
       });
     },
     openAddDialog() {
