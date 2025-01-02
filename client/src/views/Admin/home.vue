@@ -5,7 +5,7 @@
         <h1>admin home</h1>
         <el-card style="width: 40%">
           <p><i class="el-icon-s-home" style="margin-right: 18px"></i>项目名：学生填报系统</p>
-          <p><i class="el-icon-s-custom" style="margin-right: 18px"></i>开发人员：</p>
+          <p><i class="el-icon-s-custom" style="margin-right: 18px"></i>开发人员：lll</p>
           <p><i class="el-icon-location-outline" style="margin-right: 18px"></i>HMU</p>
           <p><i class="el-icon-chat-round" style="margin-right: 18px"></i></p>
           <p><i class="el-icon-error" style="margin-right: 18px;"></i></p>
