@@ -150,6 +150,25 @@
               :current-page.sync="currentPage"
               @current-change="handlePageChange"
           />
+          <!-- 输入页码并跳转 -->
+          <el-input
+              v-model.number="targetPage"
+              placeholder="页码"
+              style="width: 100px; margin-left: 10px;"
+              size="small"
+              type="number"
+              :min="1"
+              :max="totalPages"
+          />
+          <el-button
+              type="primary"
+              size="small"
+              @click="jumpToPage"
+              style="margin-left: 10px;"
+          >
+            跳转
+          </el-button>
+
         </div>
       </el-main>
     </el-container>
@@ -242,10 +261,13 @@ export default {
       selectedRows: [],
       currentPage: 1,
       pageSize: 10,
+      targetPage: null, // 目标页码
     };
   },
   computed: {
-
+    totalPages() {
+      return Math.ceil(this.consumeList.length / this.pageSize); // 总页数
+    },
     // 计算当前页的数据
     currentPageData() {
       const start = (this.currentPage - 1) * this.pageSize;
@@ -453,6 +475,13 @@ export default {
     // 分页切换处理函数
     handlePageChange(page) {
       this.currentPage = page;
+    },
+    jumpToPage() {
+      if (this.targetPage && this.targetPage >= 1 && this.targetPage <= this.totalPages) {
+        this.currentPage = this.targetPage;
+      } else {
+        this.$message.error("输入页码无效，已超出页码范围");
+      }
     },
   },
   mounted() {

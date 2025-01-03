@@ -30,9 +30,8 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
-                <el-button @click="test('ruleForm')">test</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">登 录</el-button>
+                <el-button @click="resetForm('ruleForm')">重 置</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -250,9 +249,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    test(forName) {
-      console.log(this.ruleForm)
-    }
   }
 }
 </script>
