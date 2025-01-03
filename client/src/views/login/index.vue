@@ -93,12 +93,22 @@ export default {
         if (valid) {
           let check = false
           let name = null
-
-          axios.get(`${BASE_URL}/info/getCurrentTerm`).then(function (resp) {
+          let form = {tid: that.ruleForm.id, password: that.ruleForm.password, type: that.ruleForm.type}
+          axios.get(`${BASE_URL}/info/getCurrentTerm`,{
+            headers: {
+              userid: form.tid, // 在 header 中加入 form.tid
+              usertype: form.type
+            }
+          }).then(function (resp) {
             sessionStorage.setItem("currentTerm", resp.data)
           })
 
-          axios.get(`${BASE_URL}/info/getForbidCourseSelection`).then(function (resp) {
+          axios.get(`${BASE_URL}/info/getForbidCourseSelection`,{
+            headers: {
+              userid: form.tid, // 在 header 中加入 form.tid
+              usertype: form.type
+            }}
+            ).then(function (resp) {
             sessionStorage.setItem("ForbidCourseSelection", resp.data)
           })
 
