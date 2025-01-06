@@ -43,7 +43,8 @@ import manageConsumePage from '@/views/Admin/consumeManage/manageConsumePage'; /
 import consumePage from '@/views/Student/consume/consumePage'; // 消费页面主组件
 import queryConsumePage from '@/views/Student/consume/queryConsumePage'; // 查询消费记录页面
 import queryConsumeManagePage from '@/views/Admin/consumeManage/queryConsumePage'; // 查询消费记录页面
-
+import LogManagePage from '@/views/Admin/LogManage/LogManagePage';
+import NBDSManagePage from '@/views/Admin/NBDSManage/NBDSManagePage';
 
 Vue.use(VueRouter)
 
@@ -90,17 +91,11 @@ const routes = [
         meta: {requireAuth: true}, // 学生和管理员都可访问
         children: [
           {
-            path: '/queryConsumePage', 
-            name: '查询消费记录',
-            component: queryConsumeManagePage,
-            meta: {requireAuth: true} 
-          },
-          {
-            path: '/manageConsumePage', 
+            path: '/manageConsumePage',
             name: '管理消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true} // 仅管理员可访问
-          }
+          },
         ]
       },
       {
@@ -110,16 +105,16 @@ const routes = [
         meta: {requireAuth: true},
         children: [
           {
-            path: '/addStudent',
-            name: '添加学生',
-            component: addStudent,
-            meta: {requireAuth: true}
-          },
-          {
             path: '/studentList',
             name: '学生列表',
             component: studentList,
             meta: {requireAuth: true},
+          },
+          {
+            path: '/addStudent',
+            name: '添加学生',
+            component: addStudent,
+            meta: {requireAuth: true}
           },
           {
             path: '/editorStudent',
@@ -168,6 +163,34 @@ const routes = [
             component: editorTeacher,
             meta: {requireAuth: true}
           },
+        ]
+      },
+      {
+        path: '/LogManage',
+        name: '日志管理',
+        component: consumeManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/LogManagePage',
+            name: '日志记录',
+            component: LogManagePage,
+            meta: {requireAuth: true}
+          }
+        ]
+      },
+      {
+        path: '/NBDSManage',
+        name: '国家统计局数据',
+        component: consumeManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/NBDSManagePage',
+            name: '消费品零售总额',
+            component: NBDSManagePage,
+            meta: {requireAuth: true}
+          }
         ]
       },
       {
@@ -359,14 +382,8 @@ const routes = [
         meta: {requireAuth: true, roles: ['student', 'admin']}, // 学生和管理员都可访问
         children: [
           {
-            path: '/consume/query',
-            name: '查询消费记录',
-            component: queryConsumePage,
-            meta: {requireAuth: true, roles: ['student', 'admin']} // 查询功能所有人可用
-          },
-          {
             path: '/consume/manage',
-            name: '管理消费记录',
+            name: '查询消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true, roles: ['admin']} // 仅管理员可访问
           }
@@ -428,6 +445,18 @@ export default router
     5. 系统信息 info
  */
 router.beforeEach((to, from, next) => {
+
+  const userId = sessionStorage.getItem('id');
+  const userType = sessionStorage.getItem('type');
+
+  if (userId) {
+    axios.defaults.headers.common['userid'] = String(userId);
+  }
+  if (userType) {
+    axios.defaults.headers.common['usertype'] = String(userType);
+  }
+  next();
+
   console.log(from.path + ' ====> ' + to.path)
   if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
     if (sessionStorage.getItem("token") === 'true') { // 判断本地是否存在token

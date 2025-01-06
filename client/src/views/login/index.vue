@@ -4,14 +4,14 @@
       <el-header >
         <div style="text-align: center; font-size: 25px; font-weight: bolder">
           <i class="el-icon-s-home" style="margin-right: 25px"></i>
-          选课管理系统
+          学生填报系统
         </div>
       </el-header>
       <el-main>
         <el-card class="login-module">
           <div slot="header" class="clearfix">
             <span style="text-align: center; font-size: 20px; font-family: 'Microsoft YaHei'">
-              <p><i class="el-icon-office-building" style="margin-right: 18px"></i>登陆</p>
+              <p><i class="el-icon-office-building" style="margin-right: 18px"></i>登录</p>
             </span>
           </div>
           <div>
@@ -30,9 +30,8 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">登陆</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
-                <el-button @click="test('ruleForm')">test</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">登 录</el-button>
+                <el-button @click="resetForm('ruleForm')">重 置</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -41,7 +40,26 @@
     </el-container>
   </div>
 </template>
+
+<style>
+.login-module {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 30%;
+}
+.el-header {
+  background-color: #B3C0D1;
+  color: #333;
+  line-height: 60px;
+}
+</style>
+
 <script>
+
+
 import {BASE_URL} from "@/config";
 
 export default {
@@ -68,31 +86,53 @@ export default {
   },
   methods: {
     submitForm(formName) {
+
       const that = this
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let check = false
           let name = null
-
-          axios.get(`${BASE_URL}/info/getCurrentTerm`).then(function (resp) {
+          let form = {tid: that.ruleForm.id, password: that.ruleForm.password, type: that.ruleForm.type}
+          axios.get(`${BASE_URL}/info/getCurrentTerm`,{
+            headers: {
+              userid: form.tid, // 在 header 中加入 form.tid
+              usertype: form.type
+            }
+          }).then(function (resp) {
             sessionStorage.setItem("currentTerm", resp.data)
           })
 
-          axios.get(`${BASE_URL}/info/getForbidCourseSelection`).then(function (resp) {
+          axios.get(`${BASE_URL}/info/getForbidCourseSelection`,{
+            headers: {
+              userid: form.tid, // 在 header 中加入 form.tid
+              usertype: form.type
+            }}
+            ).then(function (resp) {
             sessionStorage.setItem("ForbidCourseSelection", resp.data)
           })
 
           if (that.ruleForm.type === 'admin' || that.ruleForm.type === 'teacher') {
-            let form = {tid: that.ruleForm.id, password: that.ruleForm.password}
+            let form = {tid: that.ruleForm.id, password: that.ruleForm.password, type: that.ruleForm.type}
             console.log(form)
-            axios.post(`${BASE_URL}/teacher/login`, form).then(function (resp) {
-              console.log("教师登陆验证信息：" + resp.data)
+            axios.post(`${BASE_URL}/teacher/login`, form,{ // 第三个参数是配置项
+              headers: {
+                userid: form.tid, // 在 header 中加入 form.tid
+                usertype: form.type
+              }
+            }).then(function (resp) {
+              console.log("教师登录验证信息：" + resp.data)
               check = resp.data
               if (check === true) {
-                axios.get(`${BASE_URL}/teacher/findById/${that.ruleForm.id}`).then(function (resp) {
-                  console.log("登陆页正在获取用户信息" + resp.data)
+                axios.get(`${BASE_URL}/teacher/findById/${that.ruleForm.id}`,{
+                  headers: {
+                    userid: form.tid, // 在 header 中加入 form.tid
+                    usertype: form.type
+                  }
+                }).then(function (resp) {
+                  console.log("登录页正在获取用户信息" + resp.data)
                   name = resp.data.tname
 
+                  sessionStorage.clear()
                   sessionStorage.setItem("token", 'true')
                   sessionStorage.setItem("type", that.ruleForm.type)
                   sessionStorage.setItem("name", name)
@@ -104,7 +144,7 @@ export default {
                   if (that.ruleForm.type === 'admin' && name === 'admin') {
                     that.$message({
                       showClose: true,
-                      message: '登陆成功，欢迎 ' + name + '!',
+                      message: '登录成功，欢迎 ' + name + '!',
                       type: 'success'
                     });
                     that.$router.push('/admin')
@@ -112,7 +152,7 @@ export default {
                   else if(that.ruleForm.type === 'teacher' && name !== 'admin') {
                     that.$message({
                       showClose: true,
-                      message: '登陆成功，欢迎 ' + name + '!',
+                      message: '登录成功，欢迎 ' + name + '!',
                       type: 'success'
                     });
                     that.$router.push('/teacher')
@@ -120,31 +160,44 @@ export default {
                   else {
                     that.$message({
                       showClose: true,
-                      message: 'admin 登陆失败，检查登陆类型',
+                      message: 'admin 登录失败，检查登录类型',
                       type: 'error'
                     });
                   }
-                })
+                }).then(that.updateAxiosHeaders())
               }
               else {
                 that.$message({
                   showClose: true,
-                  message: '登陆失败，检查账号密码',
+                  message: '登录失败，检查账号密码',
                   type: 'error'
                 });
               }
             })
           }
           else if (that.ruleForm.type === 'student') {
-            let form = {sid: that.ruleForm.id, password: that.ruleForm.password}
-            axios.post(`${BASE_URL}/student/login`, form).then(function (resp) {
-              console.log("学生登陆验证信息：" + resp.data)
+            let form = {sid: that.ruleForm.id, password: that.ruleForm.password,type: that.ruleForm.type}
+            console.log(form)
+            axios.post(`${BASE_URL}/student/login`, form,{ // 第三个参数是配置项
+              headers: {
+                userid: form.sid, // 在 header 中加入 form.tid
+                usertype: form.type,
+              }
+            }).then(function (resp) {
+              console.log("学生登录验证信息：" + resp.data)
               check = resp.data
               if (check === true) {
-                axios.get(`${BASE_URL}/student/findById/${that.ruleForm.id}`).then(function (resp) {
-                  console.log("登陆页正在获取用户信息" + resp.data)
+                axios.get(`${BASE_URL}/student/findById/${that.ruleForm.id}`,{
+                  headers: {
+                    userid: form.sid, // 在 header 中加入 form.tid
+                    usertype: form.type
+
+                  }
+                }).then(function (resp) {
+                  console.log("登录页正在获取用户信息" + resp.data)
                   name = resp.data.sname
 
+                  sessionStorage.clear()
                   sessionStorage.setItem("token", 'true')
                   sessionStorage.setItem("type", that.ruleForm.type)
                   sessionStorage.setItem("name", name)
@@ -153,7 +206,7 @@ export default {
 
                   that.$message({
                     showClose: true,
-                    message: '登陆成功，欢迎 ' + name + '!',
+                    message: '登录成功，欢迎 ' + name + '!',
                     type: 'success'
                   });
 
@@ -164,7 +217,7 @@ export default {
                     path: '/' + that.ruleForm.type,
                     query: {}
                   })
-                })
+                }).then(that.updateAxiosHeaders())
               }
               else {
                 that.$message({
@@ -184,12 +237,18 @@ export default {
         }
       });
     },
+    updateAxiosHeaders() {
+      const userId = sessionStorage.getItem('id') || 'default_id'; // 默认值可根据实际需求设置
+      const userType = sessionStorage.getItem('type') || 'default_type';
+      console.log("更新 Axios 请求头: id=" + userId + ", type=" + userType);
+
+      // 转换为字符串并设置默认请求头
+      axios.defaults.headers.common['userid'] = String(userId);
+      axios.defaults.headers.common['usertype'] = String(userType);
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    test(forName) {
-      console.log(this.ruleForm)
-    }
   }
 }
 </script>
