@@ -183,74 +183,6 @@ const routes = [
             meta: {requireAuth: true}
           },
         ]
-      },
-      {
-        path: '/courseManage',
-        name: '课程管理',
-        component: courseManage,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/addCourse',
-            name: '添加课程',
-            component: addCourse,
-            meta: {requireAuth: true}
-          },
-          {
-            path: '/queryCourse',
-            name: '搜索课程',
-            component: queryCourse,
-            meta: {requireAuth: true},
-            children: [
-              {
-                path: '/courseList',
-                name: '课程列表',
-                component: courseList,
-                meta: {requireAuth: true}
-              },
-            ]
-          },
-          {
-            path: '/editorCourse',
-            name: '编辑课程',
-            component: editorCourse,
-            meta: {requireAuth: true}
-          },
-        ]
-      },
-      {
-        path: '/CourseTeacher',
-        name: '开课表管理',
-        component: CourseTeacherManage,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/queryCourseTeacher',
-            name: '开课管理',
-            component: queryCourseTeacher,
-            meta: {requireAuth: true},
-          }
-        ]
-      },
-      {
-        name: 'admin 学生成绩管理',
-        path: "/gradeCourseManage",
-        component: studentManage,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/queryGradeCourse',
-            name: '学生成绩查询',
-            component: queryGradeCourse,
-            meta: {requireAuth: true},
-          },
-          {
-            path: '/editorGradeCourse',
-            name: '编辑',
-            component: editorGradeCourse,
-            meta: {requireAuth: true}
-          }
-        ]
       }
     ]
   },
@@ -290,45 +222,44 @@ const routes = [
         ]
       },
       {
-        path: '/courseManage',
-        name: '课程设置',
-        meta: {requireAuth: true},
-        component: setCourse,
-        children: [
-          {
-            path: '/myOfferCourse',
-            name: '我开设的课程',
-            component: myOfferCourse,
-            meta: {requireAuth: true}
-          },
-          {
-            path: '/offerCourse',
-            name: '开设课程',
-            component: offerCourse,
-            meta: {requireAuth: true}
-          },
-        ]
-      },
-      {
-        name: '教师成绩管理',
-        path: '/teacherQueryGradeCourseManage',
-        component: teacherGradeCourseManage,
+        path: '/studentManage',
+        name: '学生管理',
+        component: studentManage,
         meta: {requireAuth: true},
         children: [
           {
-            path: '/teacherQueryGradeCourseManage',
-            name: '成绩管理',
-            component: teacherQueryGradeCourse,
+            path: '/addStudent',
+            name: '添加学生',
+            component: addStudent,
             meta: {requireAuth: true}
           },
           {
-            path: '/teacherEditorGradeCourse',
-            name: '编辑成绩',
-            component: teacherEditorGradeCourse,
+            path: '/studentList',
+            name: '学生列表',
+            component: studentList,
+            meta: {requireAuth: true},
+          },
+          {
+            path: '/editorStudent',
+            name: '编辑学生',
+            component: editorStudent,
             meta: {requireAuth: true}
+          },
+          {
+            path: '/queryStudent',
+            name: '搜索',
+            component: queryStudent,
+            meta: {requireAuth: true},
+            children: [
+              {
+                path: '/queryStudent/studentList',
+                component: studentList,
+                meta: {requireAuth: true}
+              }
+            ]
           }
         ]
-      }
+      },
     ]
   },
   {
