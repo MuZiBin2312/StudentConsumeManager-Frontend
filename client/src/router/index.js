@@ -44,7 +44,6 @@ import consumePage from '@/views/Student/consume/consumePage'; // 消费页面�
 import queryConsumePage from '@/views/Student/consume/queryConsumePage'; // 查询消费记录页面
 import queryConsumeManagePage from '@/views/Admin/consumeManage/queryConsumePage'; // 查询消费记录页面
 import LogManagePage from '@/views/Admin/LogManage/LogManagePage';
-import NBDSManagePage from '@/views/Admin/NBDSManage/NBDSManagePage';
 
 Vue.use(VueRouter)
 
@@ -91,11 +90,31 @@ const routes = [
         meta: {requireAuth: true}, // 学生和管理员都可访问
         children: [
           {
+            path: '/queryConsumePage',
+            name: '查询消费记录',
+            component: queryConsumeManagePage,
+            meta: {requireAuth: true}
+          },
+          {
             path: '/manageConsumePage',
             name: '管理消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true} // 仅管理员可访问
-          },
+          }
+        ]
+      },
+      {
+        path: '/LogManage',
+        name: '日志管理',
+        component: consumeManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/LogManagePage',
+            name: '日志记录',
+            component: LogManagePage,
+            meta: {requireAuth: true}
+          }
         ]
       },
       {
@@ -105,16 +124,16 @@ const routes = [
         meta: {requireAuth: true},
         children: [
           {
-            path: '/studentList',
-            name: '学生列表',
-            component: studentList,
-            meta: {requireAuth: true},
-          },
-          {
             path: '/addStudent',
             name: '添加学生',
             component: addStudent,
             meta: {requireAuth: true}
+          },
+          {
+            path: '/studentList',
+            name: '学生列表',
+            component: studentList,
+            meta: {requireAuth: true},
           },
           {
             path: '/editorStudent',
@@ -166,33 +185,73 @@ const routes = [
         ]
       },
       {
-        path: '/LogManage',
-        name: '日志管理',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
+        path: '/courseManage',
+        name: '课程管理',
+        component: courseManage,
+        meta: {requireAuth: true},
         children: [
           {
-            path: '/LogManagePage',
-            name: '日志记录',
-            component: LogManagePage,
+            path: '/addCourse',
+            name: '添加课程',
+            component: addCourse,
             meta: {requireAuth: true}
+          },
+          {
+            path: '/queryCourse',
+            name: '搜索课程',
+            component: queryCourse,
+            meta: {requireAuth: true},
+            children: [
+              {
+                path: '/courseList',
+                name: '课程列表',
+                component: courseList,
+                meta: {requireAuth: true}
+              },
+            ]
+          },
+          {
+            path: '/editorCourse',
+            name: '编辑课程',
+            component: editorCourse,
+            meta: {requireAuth: true}
+          },
+        ]
+      },
+      {
+        path: '/CourseTeacher',
+        name: '开课表管理',
+        component: CourseTeacherManage,
+        meta: {requireAuth: true},
+        children: [
+          {
+            path: '/queryCourseTeacher',
+            name: '开课管理',
+            component: queryCourseTeacher,
+            meta: {requireAuth: true},
           }
         ]
       },
       {
-        path: '/NBDSManage',
-        name: '国家统计局数据',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
+        name: 'admin 学生成绩管理',
+        path: "/gradeCourseManage",
+        component: studentManage,
+        meta: {requireAuth: true},
         children: [
           {
-            path: '/NBDSManagePage',
-            name: '消费品零售总额',
-            component: NBDSManagePage,
+            path: '/queryGradeCourse',
+            name: '学生成绩查询',
+            component: queryGradeCourse,
+            meta: {requireAuth: true},
+          },
+          {
+            path: '/editorGradeCourse',
+            name: '编辑',
+            component: editorGradeCourse,
             meta: {requireAuth: true}
           }
         ]
-      },
+      }
     ]
   },
   {
@@ -203,128 +262,73 @@ const routes = [
     meta: {requireAuth: true},
     children: [
       {
-        path: '/adminHome',
-        name: 'Hi! admin',
-        component: adminHome,
+        path: '/teacherHome',
+        name: 'Hi! teacher',
+        meta: {requireAuth: true},
+        component: teacherHome,
+        children: [
+          {
+            path: '/teacherHome',
+            name: '教师主页',
+            meta: {requireAuth: true},
+            component: teacherHome
+          },
+        ]
+      },
+      {
+        path: '/updateInfo',
+        name: '教师编辑',
+        component: updateInfo,
         meta: {requireAuth: true},
         children: [
           {
-            path: '/adminHome',
-            name: 'admin 主页',
-            component: adminHome,
-            meta: {requireAuth: true},
+            path: '/updateInfoHome',
+            name: '编辑教师信息',
+            component: updateInfo,
+            meta: {requireAuth: true}
           }
         ]
       },
       {
-        path: '/consumeManage',
-        name: '消费管理',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
+        path: '/courseManage',
+        name: '课程设置',
+        meta: {requireAuth: true},
+        component: setCourse,
         children: [
           {
-            path: '/manageConsumePage',
-            name: '管理消费记录',
-            component: manageConsumePage,
-            meta: {requireAuth: true} // 仅管理员可访问
+            path: '/myOfferCourse',
+            name: '我开设的课程',
+            component: myOfferCourse,
+            meta: {requireAuth: true}
+          },
+          {
+            path: '/offerCourse',
+            name: '开设课程',
+            component: offerCourse,
+            meta: {requireAuth: true}
           },
         ]
       },
       {
-        path: '/studentManage',
-        name: '学生管理',
-        component: studentManage,
+        name: '教师成绩管理',
+        path: '/teacherQueryGradeCourseManage',
+        component: teacherGradeCourseManage,
         meta: {requireAuth: true},
         children: [
           {
-            path: '/studentList',
-            name: '学生列表',
-            component: studentList,
-            meta: {requireAuth: true},
-          },
-          {
-            path: '/addStudent',
-            name: '添加学生',
-            component: addStudent,
+            path: '/teacherQueryGradeCourseManage',
+            name: '成绩管理',
+            component: teacherQueryGradeCourse,
             meta: {requireAuth: true}
           },
           {
-            path: '/editorStudent',
-            name: '编辑学生',
-            component: editorStudent,
-            meta: {requireAuth: true}
-          },
-          {
-            path: '/queryStudent',
-            name: '搜索',
-            component: queryStudent,
-            meta: {requireAuth: true},
-            children: [
-              {
-                path: '/queryStudent/studentList',
-                component: studentList,
-                meta: {requireAuth: true}
-              }
-            ]
-          }
-        ]
-      },
-      {
-        path: '/teacherManage',
-        name: '教师管理',
-        component: teacherManage,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/addTeacher',
-            name: '添加教师',
-            component: addTeacher,
-            meta: {requireAuth: true}
-          },
-          {
-            path: '/queryTeacher',
-            name: '教师列表',
-            component: queryTeacher,
-            meta: {requireAuth: true},
-            children: [
-            ]
-          },
-          {
-            path: '/editorTeacher',
-            name: '编辑教师',
-            component: editorTeacher,
-            meta: {requireAuth: true}
-          },
-        ]
-      },
-      {
-        path: '/LogManage',
-        name: '日志管理',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
-        children: [
-          {
-            path: '/LogManagePage',
-            name: '日志记录',
-            component: LogManagePage,
+            path: '/teacherEditorGradeCourse',
+            name: '编辑成绩',
+            component: teacherEditorGradeCourse,
             meta: {requireAuth: true}
           }
         ]
-      },
-      {
-        path: '/NBDSManage',
-        name: '国家统计局数据',
-        component: consumeManage,
-        meta: {requireAuth: true}, // 学生和管理员都可访问
-        children: [
-          {
-            path: '/NBDSManagePage',
-            name: '消费品零售总额',
-            component: NBDSManagePage,
-            meta: {requireAuth: true}
-          }
-        ]
-      },
+      }
     ]
   },
   {
@@ -369,45 +373,17 @@ const routes = [
         meta: {requireAuth: true, roles: ['student', 'admin']}, // 学生和管理员都可访问
         children: [
           {
-            path: '/consume/manage',
+            path: '/consume/query',
             name: '查询消费记录',
+            component: queryConsumePage,
+            meta: {requireAuth: true, roles: ['student', 'admin']} // 查询功能所有人可用
+          },
+          {
+            path: '/consume/manage',
+            name: '管理消费记录',
             component: manageConsumePage,
             meta: {requireAuth: true, roles: ['admin']} // 仅管理员可访问
           }
-        ]
-      },
-      {
-        path: '/studentSelectCourseManage',
-        name: '选课管理',
-        component: studentSelectCourseManage,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/studentSelectCourse',
-            name: '选课',
-            component: selectCourse,
-            meta: {requireAuth: true}
-          },
-          {
-            path: '/querySelectedCourse',
-            name: '查询课表',
-            component: querySelectedCourse,
-            meta: {requireAuth: true}
-          }
-        ]
-      },
-      {
-        path: '/courseGrade',
-        name: '学生成绩管理',
-        component: studentCourseGrade,
-        meta: {requireAuth: true},
-        children: [
-          {
-            path: '/queryCourseGrade',
-            name: '成绩查询',
-            component: queryCourseGrade,
-            meta: {requireAuth: true}
-          },
         ]
       }
     ]
@@ -432,18 +408,6 @@ export default router
     5. 系统信息 info
  */
 router.beforeEach((to, from, next) => {
-
-  const userId = sessionStorage.getItem('id');
-  const userType = sessionStorage.getItem('type');
-
-  if (userId) {
-    axios.defaults.headers.common['userid'] = String(userId);
-  }
-  if (userType) {
-    axios.defaults.headers.common['usertype'] = String(userType);
-  }
-  next();
-
   console.log(from.path + ' ====> ' + to.path)
   if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
     if (sessionStorage.getItem("token") === 'true') { // 判断本地是否存在token

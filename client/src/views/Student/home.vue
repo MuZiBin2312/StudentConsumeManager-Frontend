@@ -6,10 +6,7 @@
         <info-card></info-card>
         <el-card style="width: 100%; margin-top: 10px">
           <p><i class="el-icon-s-home" style="margin-right: 18px"></i>项目名：学生填报系统</p>
-          <p><i class="el-icon-s-custom" style="margin-right: 18px"></i></p>
-          <p><i class="el-icon-location-outline" style="margin-right: 18px"></i>HMU</p>
-          <p><i class="el-icon-chat-round" style="margin-right: 18px"></i></p>
-          <p><i class="el-icon-error" style="margin-right: 18px;"></i></p>
+          <p><i class="el-icon-location-outline" style="margin-right: 18px"></i>TCU</p>
         </el-card>
         <logout></logout>
       </el-main>
