@@ -44,6 +44,7 @@ import consumePage from '@/views/Student/consume/consumePage'; // 消费页面�
 import queryConsumePage from '@/views/Student/consume/queryConsumePage'; // 查询消费记录页面
 import queryConsumeManagePage from '@/views/Admin/consumeManage/queryConsumePage'; // 查询消费记录页面
 import LogManagePage from '@/views/Admin/LogManage/LogManagePage';
+import NBDSManage from '@/views/Admin/NBDSManage/NBDSManagePage';
 
 Vue.use(VueRouter)
 
@@ -113,6 +114,20 @@ const routes = [
             path: '/LogManagePage',
             name: '日志记录',
             component: LogManagePage,
+            meta: {requireAuth: true}
+          }
+        ]
+      },
+      {
+        path: '/NBDSManage',
+        name: '国家统计局数据',
+        component: NBDSManage,
+        meta: {requireAuth: true}, // 学生和管理员都可访问
+        children: [
+          {
+            path: '/NBDSManagePage',
+            name: '消费品零售总额',
+            component: NBDSManage,
             meta: {requireAuth: true}
           }
         ]
